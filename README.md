@@ -1,13 +1,33 @@
-# 🛡️ Multimodal Context-Aware Hate Speech & Toxicity Detection System
+# 🛡️ Multimodal Context-Aware Hate Speech Detection System
+### 🔮 Phase 2: 3D Holographic Cyber Cortex & Multilingual BERT Reasoning (Live)
 
+[![Phase 2](https://img.shields.io/badge/Phase%202-3D%20Hologram%20Live-brightgreen.svg)](#-phase-2-3d-holographic-cyber-cortex--multilingual-bert-hud)
+[![3D Engine](https://img.shields.io/badge/3D%20Engine-Three.js%20WebGL-cyan.svg)](https://threejs.org/)
+[![Languages](https://img.shields.io/badge/Languages-English%20%7C%20Hindi%20%7C%20Hinglish%20%7C%20Telugu-blue.svg)](#-how-the-system-understands-context)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
-[![Machine Learning](https://img.shields.io/badge/ML-Scikit--Learn-orange.svg)](https://scikit-learn.org/)
-[![ASR](https://img.shields.io/badge/ASR-Faster--Whisper%20(OpenAI)-purple.svg)](https://github.com/SYSTRAN/faster-whisper)
-[![UI](https://img.shields.io/badge/Frontend-Streamlit-red.svg)](https://streamlit.io/)
+[![ASR](https://img.shields.io/badge/ASR-Faster--Whisper%20%2B%20WebSpeech-purple.svg)](https://github.com/SYSTRAN/faster-whisper)
+
+> 🌌 **Phase 2 Upgrade:** Next-generation **3D Procedural Holographic Avatar (Three.js)** with real-time audio lip-sync, dynamic color-shifting (Safe Cyan / Slur Amber / Threat Red Alert), and deep contextual disambiguation across **English, Hindi, Hinglish, and Telugu**.
+
+---
+
+## ⚡ Quick Launch (Phase 2 3D Hologram HUD)
+
+```bash
+# 1. Start server from project directory
+python -m http.server 8080
+
+# 2. Open 3D Hologram HUD in your browser
+http://localhost:8080/hologram_face_hud.html
+```
+
+---
+
+## 📖 Overview
 
 An advanced **Multimodal (Voice + Text)** Natural Language Processing and Machine Learning system engineered to detect hate speech, toxicity, and offensive language. 
 
-Unlike traditional keyword-based filters that generate high false-positive rates on conversational slang, this engine features a **Hybrid Context-Disambiguation Layer** specifically tuned for nuanced bilingual text (English, Hindi, and Hinglish), coupled with **OpenAI Faster-Whisper ASR** for real-time speech analysis.
+Unlike traditional keyword-based filters that generate high false-positive rates on conversational slang, this engine features a **Hybrid Context-Disambiguation Layer** specifically tuned for nuanced multilingual text (English, Hindi, Hinglish, and Telugu), coupled with **OpenAI Faster-Whisper ASR** and **Three.js 3D Cyber Avatar** for real-time speech analysis and visualization.
 
 ---
 
