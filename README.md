@@ -122,7 +122,48 @@ streamlit run app.py
 ## 🛠️ Technology Stack
 
 - **Machine Learning & NLP:** Scikit-Learn, NLTK, TF-IDF, Joblib
-- **Speech Recognition (ASR):** Faster-Whisper (OpenAI Whisper via CTranslate2), Librosa, SoundFile
-- **Application & Dashboard:** Streamlit, Pandas, NumPy
+- **Speech Recognition (ASR):** Faster-Whisper (OpenAI Whisper via CTranslate2), Web Speech API
+- **Application & Dashboard:** Streamlit, Three.js (WebGL 3D Particles), Vanilla HTML5/CSS3 Cyberpunk HUD
 - **Execution & GPU:** NVIDIA CUDA, cuDNN
 
+---
+
+## 🔮 Phase 2: 3D Holographic Cyber Cortex & Multilingual BERT HUD
+
+Phase 2 elevates this project from a standard ML dashboard into a state-of-the-art **Sci-Fi 3D Holographic AI Cockpit** with multilingual BERT reasoning:
+
+```
+              ┌────────────────────────────────────────────────────────┐
+              │     🌌 3D PROCEDURAL HOLOGRAPHIC CYBER CORTEX (Three.js)│
+              │   • 3D Movie-Grade Particle Mesh (1,800+ nodes)         │
+              │   • Audio-Reactive Facial Geometry & Speech Lip-Sync    │
+              │   • Dynamic Color Shifting (Cyan / Amber / Red Alert)   │
+              └───────────────────────────┬────────────────────────────┘
+                                          │
+    ┌─────────────────────────────────────┴─────────────────────────────────────┐
+    ▼                                                                           ▼
+[ 🎙️ Live Multilingual Voice STT ]                           [ 🧠 Multilingual BERT Context Engine ]
+  • Dynamic Language Switcher (EN / HI / TE)                    • 18 Pre-Calibrated Disambiguation Benchmarks
+  • Devanagari Phonetic English Threat Catching                • English: "Killing it" (Safe) vs "Kill you" (Threat)
+  • Multilingual Web Speech Synthesis Output                    • Hindi: "Mandir ka ghanta" (Safe) vs Slang (Offensive)
+                                                                • Telugu: "Intlo kukka" (Safe) vs Insult (Offensive)
+```
+
+### 🌟 Key Phase 2 Features
+
+1. **3D Procedural Hologram Particle Avatar:**
+   - 100% procedural 3D face mesh built with Three.js (No static 2D cutouts).
+   - Real-time jaw displacement, eyelid blinking, and orbital particle swarm synchronized to audio speech playback.
+
+2. **Multilingual Context Disambiguation Matrix (English, Hindi, Hinglish, Telugu):**
+   - **English Nuances:** Differentiates praise metaphors (*"You are killing it on stage tonight"*) from literal threats (*"I will kill you"*).
+   - **Hindi/Hinglish Nuances:** Resolves dual-use words like *Ghanta, Kutta, Saala, Gadha, Ullu* based on semantic context anchors.
+   - **Telugu Nuances:** Classifies *Kukka* (కుక్క - pet vs slur), *Pichi* (పిచ్చి - hobby craze vs mental insult), *Donga* (దొంగ - affectionate child teasing vs thief).
+   - **Devanagari Phonetic Speech Defense:** Detects English death threats spoken into Hindi microphones (e.g. `आई वांट टू किल यू` ➔ 98% Red Alert Threat).
+
+3. **To Launch Phase 2 3D HUD:**
+   ```bash
+   # From project root
+   python -m http.server 8080
+   # Open in browser: http://localhost:8080/hologram_face_hud.html
+   ```

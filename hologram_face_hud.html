@@ -1,0 +1,3349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YCCER v2.007 // 3D CYBER HOLOGRAPHIC AI AVATAR & CONTEXT ENGINE</title>
+    <!-- Sci-Fi / Cyberpunk Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+Devanagari:wght@600;800&display=swap" rel="stylesheet">
+    
+    <!-- Three.js 3D Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --bg-void: #03060f;
+            --bg-panel: rgba(8, 14, 28, 0.88);
+            --bg-card: rgba(12, 22, 42, 0.75);
+            --neon-cyan: #00f0ff;
+            --neon-cyan-glow: rgba(0, 240, 255, 0.6);
+            --neon-pink: #ff0055;
+            --neon-pink-glow: rgba(255, 0, 85, 0.6);
+            --neon-yellow: #fcee0a;
+            --neon-yellow-glow: rgba(252, 238, 10, 0.6);
+            --neon-green: #00ff66;
+            --neon-green-glow: rgba(0, 255, 102, 0.6);
+            --holo-blue: #38bdf8;
+            --text-bright: #f8fafc;
+            --text-dim: #64748b;
+            --text-muted: #94a3b8;
+            --border-cyan: rgba(0, 240, 255, 0.35);
+            --border-pink: rgba(255, 0, 85, 0.35);
+            --border-glow: 0 0 10px rgba(0, 240, 255, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Rajdhani', sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-void);
+            background-image: 
+                radial-gradient(circle at 50% 10%, rgba(0, 240, 255, 0.08) 0%, transparent 55%),
+                radial-gradient(circle at 85% 85%, rgba(255, 0, 85, 0.06) 0%, transparent 50%),
+                linear-gradient(rgba(0, 240, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.015) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
+            color: var(--text-bright);
+            min-height: 100vh;
+            padding: 14px 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Scanlines Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.28) 50%);
+            background-size: 100% 3px;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.65;
+        }
+
+        /* Ambient Holographic Vignette */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            box-shadow: inset 0 0 140px rgba(0, 240, 255, 0.08);
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        /* HEADER */
+        .header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 18px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-cyan);
+            box-shadow: var(--border-glow);
+            border-radius: 4px;
+            margin-bottom: 14px;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .header-bar::after {
+            content: "ONLINE // MULTILINGUAL BERT HUD";
+            position: absolute;
+            bottom: -8px;
+            right: 20px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--neon-cyan);
+            letter-spacing: 2px;
+            background: var(--bg-void);
+            padding: 0 6px;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-badge {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.25rem;
+            color: #03060f;
+            background: linear-gradient(135deg, var(--neon-cyan), #00a2ff);
+            padding: 4px 12px;
+            border-radius: 2px;
+            letter-spacing: 2px;
+            box-shadow: 0 0 15px var(--neon-cyan-glow);
+        }
+
+        .brand-title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-title h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .brand-title span {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--neon-cyan);
+            letter-spacing: 2px;
+        }
+
+        .system-telemetry {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.78rem;
+        }
+
+        .telem-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            padding: 4px 10px;
+            border-radius: 3px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--neon-green);
+            box-shadow: 0 0 8px var(--neon-green);
+            animation: pulse-dot 1.2s infinite alternate;
+        }
+
+        @keyframes pulse-dot {
+            from { opacity: 0.4; transform: scale(0.85); }
+            to { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* GRID LAYOUT */
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 340px 1fr 360px;
+            gap: 14px;
+            min-height: calc(100vh - 110px);
+        }
+
+        /* PANELS / CARDS */
+        .hud-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-cyan);
+            border-radius: 4px;
+            padding: 14px;
+            backdrop-filter: blur(8px);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hud-card.pink-border {
+            border-color: var(--border-pink);
+        }
+
+        .card-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--neon-cyan);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-tag.pink {
+            color: var(--neon-pink);
+        }
+
+        .card-corner {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border: 1px solid var(--neon-cyan);
+        }
+        .corner-tl { top: 2px; left: 2px; border-right: none; border-bottom: none; }
+        .corner-tr { top: 2px; right: 2px; border-left: none; border-bottom: none; }
+        .corner-bl { bottom: 2px; left: 2px; border-right: none; border-top: none; }
+        .corner-br { bottom: 2px; right: 2px; border-left: none; border-top: none; }
+
+        /* LEFT SIDEBAR: PROFILE + TEST CONTEXTS */
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+            margin-bottom: 12px;
+        }
+
+        .profile-avatar-wrap {
+            position: relative;
+            width: 58px;
+            height: 58px;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid var(--neon-cyan);
+            box-shadow: 0 0 15px var(--neon-cyan-glow);
+            background: radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.22) 0%, rgba(3, 6, 15, 0.95) 75%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .holo-core-svg {
+            width: 44px;
+            height: 44px;
+            animation: holoCorePulse 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes holoCorePulse {
+            0% { transform: scale(0.96); filter: drop-shadow(0 0 2px #00f0ff); }
+            50% { transform: scale(1.04); filter: drop-shadow(0 0 8px #ff0055); }
+            100% { transform: scale(0.96); filter: drop-shadow(0 0 4px #00f0ff); }
+        }
+
+        .holo-mini-btn {
+            background: rgba(0, 240, 255, 0.12);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .holo-mini-btn:hover {
+            background: var(--neon-cyan);
+            color: #03060f;
+            box-shadow: 0 0 8px var(--neon-cyan-glow);
+        }
+
+        .holo-mini-btn.pink {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            background: rgba(255, 0, 85, 0.12);
+        }
+
+        .holo-mini-btn.pink:hover {
+            background: var(--neon-pink);
+            color: #fff;
+            box-shadow: 0 0 8px var(--neon-pink-glow);
+        }
+
+        .profile-info h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.92rem;
+            color: #ffffff;
+            letter-spacing: 1px;
+        }
+
+        .profile-info span {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--neon-cyan);
+        }
+
+        /* QUICK CONTEXT SCENARIOS */
+        .scenario-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 6px;
+            flex: 1;
+        }
+
+        .scenario-btn {
+            background: rgba(13, 22, 42, 0.75);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            color: var(--text-bright);
+            padding: 8px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .scenario-btn:hover {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 240, 255, 0.12);
+            transform: translateX(3px);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);
+        }
+
+        .scenario-btn.active {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 240, 255, 0.18);
+            box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.3);
+        }
+
+        .scenario-label {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            margin-bottom: 3px;
+        }
+
+        .scenario-badge-safe { color: var(--neon-green); }
+        .scenario-badge-slang { color: var(--neon-yellow); }
+        .scenario-badge-hate { color: var(--neon-pink); }
+
+        .scenario-text {
+            font-family: 'Noto Sans Devanagari', 'Rajdhani', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            line-height: 1.2;
+            color: #ffffff;
+        }
+
+        /* CENTER COCKPIT: 3D HOLOGRAPHIC AVATAR STAGE */
+        .holo-stage-card {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: radial-gradient(circle at 50% 45%, rgba(0, 240, 255, 0.09) 0%, rgba(3, 6, 15, 0.95) 75%);
+            border: 1px solid var(--border-cyan);
+            box-shadow: inset 0 0 40px rgba(0, 240, 255, 0.15), 0 0 25px rgba(0, 240, 255, 0.12);
+            overflow: hidden;
+            padding: 0;
+        }
+
+        .holo-header-overlay {
+            position: absolute;
+            top: 12px;
+            left: 16px;
+            right: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .holo-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan-glow);
+        }
+
+        .holo-mode-pill {
+            pointer-events: auto;
+            display: flex;
+            gap: 4px;
+            background: rgba(4, 9, 20, 0.8);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .mode-chip {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-chip.active {
+            background: var(--neon-cyan);
+            color: #03060f;
+            font-weight: bold;
+            border-radius: 2px;
+            box-shadow: 0 0 8px var(--neon-cyan-glow);
+        }
+
+        /* 3D Canvas Container */
+        #hologramCanvasContainer {
+            width: 100%;
+            height: 480px;
+            position: relative;
+            cursor: grab;
+        }
+        #hologramCanvasContainer:active {
+            cursor: grabbing;
+        }
+
+        /* Holographic Ring Reticles on Overlay */
+        .holo-reticle-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .radar-grid {
+            position: absolute;
+            width: 380px;
+            height: 380px;
+            border: 1px dashed rgba(0, 240, 255, 0.18);
+            border-radius: 50%;
+            animation: rotate-radar 25s linear infinite;
+        }
+
+        .radar-grid-inner {
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border: 1px solid rgba(255, 0, 85, 0.15);
+            border-radius: 50%;
+            animation: rotate-radar-rev 18s linear infinite;
+        }
+
+        @keyframes rotate-radar {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes rotate-radar-rev {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+
+        .holo-face-target-box {
+            position: absolute;
+            width: 180px;
+            height: 230px;
+            border: 1px solid rgba(0, 240, 255, 0.28);
+            pointer-events: none;
+        }
+        .holo-face-target-box::before {
+            content: "[ TRACKING: FACE_MESH ]";
+            position: absolute;
+            top: -16px;
+            left: 0;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--neon-cyan);
+            letter-spacing: 1px;
+        }
+
+        /* Speaking Wave / Sound Ring */
+        .holo-speech-aura {
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-cyan);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .speaking .holo-speech-aura {
+            opacity: 0.7;
+            animation: speech-pulse 0.9s ease-out infinite;
+        }
+
+        @keyframes speech-pulse {
+            0% { transform: scale(0.8); opacity: 0.8; border-color: var(--neon-cyan); }
+            50% { border-color: var(--neon-pink); }
+            100% { transform: scale(1.35); opacity: 0; border-color: var(--neon-cyan); }
+        }
+
+        /* AVATAR SUBTITLES / LIVE SPEECH DIALOGUE BUBBLE */
+        .avatar-dialogue-panel {
+            background: rgba(5, 10, 22, 0.92);
+            border-top: 1px solid var(--border-cyan);
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .speech-indicator-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(0, 240, 255, 0.15);
+            border: 1px solid var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: var(--neon-cyan);
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        .speaking .speech-indicator-icon {
+            border-color: var(--neon-pink);
+            background: rgba(255, 0, 85, 0.2);
+            color: var(--neon-pink);
+            box-shadow: 0 0 15px var(--neon-pink-glow);
+            animation: pulse-dot 0.6s infinite alternate;
+        }
+
+        .speech-content {
+            flex: 1;
+        }
+
+        .speech-speaker-name {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--neon-cyan);
+            letter-spacing: 2px;
+            margin-bottom: 2px;
+        }
+
+        .speech-text-box {
+            font-family: 'Share Tech Mono', 'Noto Sans Devanagari', monospace;
+            font-size: 0.92rem;
+            color: #ffffff;
+            line-height: 1.3;
+            letter-spacing: 0.5px;
+            min-height: 24px;
+        }
+
+        .voice-playback-btn {
+            background: rgba(0, 240, 255, 0.12);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 6px 12px;
+            border-radius: 3px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .voice-playback-btn:hover {
+            background: var(--neon-cyan);
+            color: #03060f;
+            box-shadow: 0 0 12px var(--neon-cyan-glow);
+        }
+
+        /* INPUT BAR AT BOTTOM OF COCKPIT */
+        .interactive-input-bar {
+            padding: 12px 16px;
+            background: rgba(7, 13, 26, 0.95);
+            border-top: 1px solid rgba(0, 240, 255, 0.2);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .custom-text-input {
+            flex: 1;
+            background: rgba(3, 7, 16, 0.85);
+            border: 1px solid rgba(0, 240, 255, 0.35);
+            color: #ffffff;
+            padding: 10px 14px;
+            border-radius: 3px;
+            font-family: 'Noto Sans Devanagari', 'Rajdhani', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .custom-text-input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, var(--neon-cyan), #0099ff);
+            border: none;
+            color: #03060f;
+            padding: 10px 18px;
+            border-radius: 3px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.82rem;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 14px var(--neon-cyan-glow);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 22px var(--neon-cyan-glow);
+        }
+
+        .mic-btn-action {
+            background: rgba(255, 0, 85, 0.15);
+            border: 1px solid var(--neon-pink);
+            color: var(--neon-pink);
+            padding: 10px 14px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .mic-btn-action:hover, .mic-btn-action.recording {
+            background: var(--neon-pink);
+            color: #ffffff;
+            box-shadow: 0 0 18px var(--neon-pink-glow);
+            animation: pulse-dot 0.8s infinite alternate;
+        }
+
+        /* RIGHT PANEL: REASONING & TELEMETRY */
+        .verdict-banner {
+            padding: 14px;
+            border-radius: 3px;
+            text-align: center;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-cyan);
+            background: rgba(0, 240, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .verdict-banner.verdict-normal {
+            border-color: var(--neon-green);
+            background: rgba(0, 255, 102, 0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.2);
+        }
+
+        .verdict-banner.verdict-offensive {
+            border-color: var(--neon-yellow);
+            background: rgba(252, 238, 10, 0.1);
+            box-shadow: 0 0 20px rgba(252, 238, 10, 0.2);
+        }
+
+        .verdict-banner.verdict-hate {
+            border-color: var(--neon-pink);
+            background: rgba(255, 0, 85, 0.15);
+            box-shadow: 0 0 25px rgba(255, 0, 85, 0.3);
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-4px); }
+            40% { transform: translateX(4px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+
+        .verdict-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+        .verdict-normal .verdict-title { color: var(--neon-green); }
+        .verdict-offensive .verdict-title { color: var(--neon-yellow); }
+        .verdict-hate .verdict-title { color: var(--neon-pink); }
+
+        .verdict-reason {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.78rem;
+            color: #e2e8f0;
+            line-height: 1.35;
+        }
+
+        /* CONTEXT DEEP-DIVE CARD */
+        .context-matrix-card {
+            background: rgba(8, 14, 28, 0.6);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            padding: 10px;
+            border-radius: 3px;
+            margin-bottom: 12px;
+        }
+
+        .matrix-row {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .matrix-label { color: var(--text-dim); }
+        .matrix-val { color: var(--neon-cyan); font-weight: bold; }
+
+        /* BERT ATTENTION HEATMAP SIMULATION */
+        .attention-map-wrap {
+            margin-top: 8px;
+        }
+        .attention-tokens {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .attn-token {
+            font-family: 'Noto Sans Devanagari', 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 2px;
+            background: rgba(0, 240, 255, 0.12);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            color: #ffffff;
+            transition: all 0.2s ease;
+        }
+        .attn-token.high-attn {
+            background: rgba(255, 0, 85, 0.35);
+            border-color: var(--neon-pink);
+            color: #ff99bb;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255, 0, 85, 0.4);
+        }
+        .attn-token.safe-attn {
+            background: rgba(0, 255, 102, 0.25);
+            border-color: var(--neon-green);
+            color: #a7f3d0;
+            font-weight: bold;
+        }
+
+        /* LIVE TERMINAL LOGS */
+        .terminal-box {
+            flex: 1;
+            background: rgba(3, 6, 14, 0.95);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 3px;
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+            color: #94a3b8;
+            overflow-y: auto;
+            max-height: 180px;
+        }
+
+        .term-line {
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        .term-ts { color: var(--neon-cyan); }
+        .term-ok { color: var(--neon-green); }
+        .term-warn { color: var(--neon-yellow); }
+        .term-err { color: var(--neon-pink); }
+
+        /* MODAL: FACE UPLOAD & WEBCAM CYBER PANEL */
+        .cyber-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(3, 6, 15, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .cyber-modal-overlay.open {
+            display: flex;
+            animation: fadeIn 0.25s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .cyber-modal-card {
+            background: rgba(8, 14, 28, 0.95);
+            border: 1px solid var(--neon-cyan);
+            box-shadow: 0 0 35px var(--neon-cyan-glow), inset 0 0 20px rgba(0, 240, 255, 0.15);
+            border-radius: 6px;
+            width: 100%;
+            max-width: 520px;
+            padding: 22px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.25);
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            color: #ffffff;
+            letter-spacing: 2px;
+        }
+
+        .modal-close-btn {
+            background: transparent;
+            border: 1px solid var(--neon-pink);
+            color: var(--neon-pink);
+            padding: 4px 10px;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+            border-radius: 2px;
+            transition: all 0.2s;
+        }
+        .modal-close-btn:hover {
+            background: var(--neon-pink);
+            color: #ffffff;
+            box-shadow: 0 0 10px var(--neon-pink-glow);
+        }
+
+        .modal-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .modal-tab-btn {
+            flex: 1;
+            padding: 8px;
+            background: rgba(13, 22, 42, 0.8);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            color: var(--text-muted);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+        .modal-tab-btn.active {
+            background: rgba(0, 240, 255, 0.2);
+            border-color: var(--neon-cyan);
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+        }
+
+        .upload-dropzone {
+            border: 2px dashed rgba(0, 240, 255, 0.4);
+            border-radius: 4px;
+            padding: 28px 16px;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(4, 9, 20, 0.6);
+            transition: all 0.2s;
+            margin-bottom: 14px;
+        }
+        .upload-dropzone:hover {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 240, 255, 0.08);
+        }
+
+        .webcam-wrap {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            background: #000;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-cyan);
+        }
+
+        #webcamVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        .webcam-oval-reticle {
+            position: absolute;
+            width: 160px;
+            height: 210px;
+            border: 2px dashed var(--neon-cyan);
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 15px var(--neon-cyan-glow);
+            animation: pulse-dot 1.5s infinite alternate;
+        }
+        .webcam-oval-reticle::after {
+            content: "ALIGN YOUR FACE";
+            position: absolute;
+            bottom: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--neon-cyan);
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+
+        /* Mic Language Selector */
+        .mic-lang-select {
+            background: rgba(4, 15, 28, 0.95);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            padding: 8px 10px;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
+            text-transform: uppercase;
+        }
+        .mic-lang-select:hover, .mic-lang-select:focus {
+            box-shadow: 0 0 14px rgba(0, 240, 255, 0.5);
+            border-color: #fff;
+            color: #fff;
+        }
+        .mic-lang-select option {
+            background: #040b14;
+            color: #00f0ff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header class="header-bar">
+        <div class="brand-box">
+            <div class="brand-badge">YCCER</div>
+            <div class="brand-title">
+                <h1>Holographic AI Engine // v2.007</h1>
+                <span>MULTILINGUAL BERT CONTEXT REASONING & 3D AVATAR SYSTEM</span>
+            </div>
+        </div>
+
+        <div class="system-telemetry">
+            <div class="telem-pill">
+                <span class="status-dot"></span>
+                <span>HOLO_MESH: ONLINE</span>
+            </div>
+            <div class="telem-pill">
+                <span>FPS: <strong id="liveFps" style="color:var(--neon-green);">60</strong></span>
+            </div>
+            <div class="telem-pill">
+                <span>BERT_DEVICE: <strong style="color:var(--neon-cyan);">CUDA/GPU (VIRTUAL)</strong></span>
+            </div>
+            <div class="telem-pill">
+                <span>TIME: <strong id="liveClock" style="color:#ffffff;">11:15:00 IST</strong></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- WORKSPACE 3-COLUMN GRID -->
+    <div class="workspace-grid">
+
+        <!-- LEFT COLUMN: OPERATOR PROFILE & SCENARIOS -->
+        <aside class="hud-card">
+            <span class="card-corner corner-tl"></span>
+            <span class="card-corner corner-tr"></span>
+            <span class="card-corner corner-bl"></span>
+            <span class="card-corner corner-br"></span>
+
+            <div class="card-tag">
+                <span>//AI_AVATAR_NODE</span>
+                <span>STATUS: ONLINE</span>
+            </div>
+
+            <!-- Profile Info: Pure Holographic AI Avatar Core (No Real Photo) -->
+            <div class="profile-section">
+                <div class="profile-avatar-wrap" title="3D Holographic AI Neural Node">
+                    <svg viewBox="0 0 80 80" class="holo-core-svg">
+                        <circle cx="40" cy="40" r="36" stroke="var(--neon-cyan)" stroke-width="1.2" fill="none" opacity="0.4" stroke-dasharray="4 2"/>
+                        <circle cx="40" cy="40" r="28" stroke="var(--neon-pink)" stroke-width="1.2" fill="rgba(0,240,255,0.06)"/>
+                        <!-- Holographic Cyber Face Blueprint -->
+                        <polygon points="40,16 60,26 62,48 40,64 18,48 20,26" stroke="var(--neon-cyan)" stroke-width="1.6" fill="none"/>
+                        <circle cx="32" cy="35" r="2.5" fill="#00f0ff"/>
+                        <circle cx="48" cy="35" r="2.5" fill="#00f0ff"/>
+                        <polyline points="40,32 38,43 43,43" stroke="var(--neon-cyan)" stroke-width="1.4" fill="none"/>
+                        <line x1="33" y1="52" x2="47" y2="52" stroke="#ff0055" stroke-width="2"/>
+                        <line x1="20" y1="40" x2="60" y2="40" stroke="var(--neon-cyan)" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.5"/>
+                    </svg>
+                </div>
+                <div class="profile-info">
+                    <h3 id="operatorName">CYBER_HOLOGRAM_v2</h3>
+                    <span>MULTILINGUAL BERT ENGINE</span>
+                    <div style="margin-top:5px; display:flex; gap:6px;">
+                        <button class="holo-mini-btn" onclick="triggerVoiceGreeting()">
+                            🎙️ TEST TALK
+                        </button>
+                        <button class="holo-mini-btn pink" onclick="cycleHoloColor()">
+                            🎨 THEME
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-tag" style="margin-top:6px;">
+                <span>//MULTILINGUAL_BERT_CONTEXTS</span>
+                <span>ENGLISH, HINDI & TELUGU (18)</span>
+            </div>
+
+            <!-- Pre-defined Test Scenarios (English, Hindi & Telugu Multilingual Context Tests) -->
+            <div class="scenario-box" style="max-height: 480px; overflow-y: auto; padding-right: 4px;">
+
+                <!-- English Scenarios -->
+                <div class="scenario-btn active" onclick="loadScenario(0)">
+                    <div class="scenario-label">
+                        <span>[EN] #01 PRAISE METAPHOR</span>
+                        <span class="scenario-badge-safe">SAFE (NORMAL)</span>
+                    </div>
+                    <div class="scenario-text">"You are killing it on stage tonight, awesome performance!"</div>
+                </div>
+
+                <div class="scenario-btn" onclick="loadScenario(1)">
+                    <div class="scenario-label">
+                        <span>[EN] #02 CANINE BREEDING</span>
+                        <span class="scenario-badge-safe">SAFE (NORMAL)</span>
+                    </div>
+                    <div class="scenario-text">"The champion female dog gave birth to five healthy puppies"</div>
+                </div>
+
+                <div class="scenario-btn" onclick="loadScenario(2)">
+                    <div class="scenario-label">
+                        <span>[EN] #03 VIDEO PRODUCTION</span>
+                        <span class="scenario-badge-safe">SAFE (NORMAL)</span>
+                    </div>
+                    <div class="scenario-text">"Let's shoot a promotional video in the central park tomorrow"</div>
+                </div>
+
+                <div class="scenario-btn" onclick="loadScenario(3)">
+                    <div class="scenario-label">
+                        <span>[EN] #04 MODERN SLANG</span>
+                        <span class="scenario-badge-safe">SAFE (NORMAL)</span>
+                    </div>
+                    <div class="scenario-text">"That skateboard trick you pulled off was completely sick!"</div>
+                </div>
+
+                <div class="scenario-btn" onclick="loadScenario(4)">
+                    <div class="scenario-label">
+                        <span>[EN] #05 DIRECT DEATH THREAT</span>
+                        <span class="scenario-badge-hate">HATE SPEECH / THREAT</span>
+                    </div>
+                    <div class="scenario-text">"I will kill you and burn your house down, you scum"</div>
+                </div>
+
+                <div class="scenario-btn" onclick="loadScenario(5)">
+                    <div class="scenario-label">
+                        <span>[EN] #06 MISOGYNISTIC SLUR</span>
+                        <span class="scenario-badge-slang">OFFENSIVE (SLUR)</span>
+                    </div>
+                    <div class="scenario-text">"Shut up you useless bitch and get out of here"</div>
+                </div>
+
+                <!-- Hindi & Hinglish Scenarios -->
+                <div class="scenario-btn" onclick="loadScenario(6)">
+                    <div class="scenario-label">
+                        <span>[HI] #07 RELIGIOUS BELL</span>
+                        <span class="scenario-badge-safe">SAFE (NORMAL)</span>
+                    </div>
+                    <div class="scenario-text">"Mandir mein ghanta baj raha hai, aarti ka samay ho gaya"</div>
+                </div>
+
+                <div class="scenario-btn" onclick="loadScenario(7)">
+                    <div class="scenario-label">
+                        <span>[HI] #08 VULGAR SLANG</span>
+                        <span class="scenario-badge-slang">OFFENSIVE (SLANG)</span>
+                    </div>
+                    <div class="scenario-text">"Ghanta farak padta hai mujhe teri baaton se"</div>
+                </div>
+
+                <div class="scenario-btn" onclick="loadScenario(8)">
+                    <div class="scenario-label">
+                        <span>[HI] #09 DOMESTIC PET</span>
+                        <span class="scenario-badge-safe">SAFE (NORMAL)</span>
+                    </div>
+                    <div class="scenario-text">"Mera kutta bahut pyaara aur samajhdaar hai"</div>
+                </div>
+
+                <div class="scenario-btn" onclick="loadScenario(9)">
+                    <div class="scenario-label">
+                        <span>[HI] #10 TARGETED DEATH THREAT</span>
+                        <span class="scenario-badge-hate">HATE SPEECH / THREAT</span>
+                    </div>
+                    <div class="scenario-text">"Kutte kamine jaan se maar dunga tujhe dekh lena"</div>
+                </div>
+
+                <div class="scenario-btn" onclick="loadScenario(10)">
+                    <div class="scenario-label">
+                        <span>[HI] #11 FARM ANIMAL (DONKEY)</span>
+                        <span class="scenario-badge-safe">SAFE (NORMAL)</span>
+                    </div>
+                    <div class="scenario-text">"Khet mein gadha bojh utha raha hai, mehnati janwar hai"</div>
+                </div>
+
+                <div class="scenario-btn" onclick="loadScenario(11)">
+                    <div class="scenario-label">
+                        <span>[HI] #12 NOCTURNAL BIRD (OWL)</span>
+                        <span class="scenario-badge-safe">SAFE (NORMAL)</span>
+                    </div>
+                    <div class="scenario-text">"Raat ko ped par ullu baitha hai, aakhein chamak rahi hain"</div>
+                </div>
+
+                <div class="scenario-btn" onclick="loadScenario(12)">
+                    <div class="scenario-label">
+                        <span>[HI] #13 BROTHER-IN-LAW</span>
+                        <span class="scenario-badge-safe">SAFE (NORMAL)</span>
+                    </div>
+                    <div class="scenario-text">"Mera saala bohot accha doctor hai, kal ghar aayega"</div>
+                </div>
+
+                <div class="scenario-btn" onclick="loadScenario(13)">
+                    <div class="scenario-label">
+                        <span>[HI] #14 POLITE HINDI GREETING</span>
+                        <span class="scenario-badge-safe">SAFE (NORMAL)</span>
+                    </div>
+                    <div class="scenario-text">"नमस्ते, आप कैसे हैं? सब कुशल मंगल है ना?"</div>
+                </div>
+
+                <!-- Telugu & Tenglish Multilingual Scenarios -->
+                <div class="scenario-btn" onclick="loadScenario(14)">
+                    <div class="scenario-label">
+                        <span>[TE] #15 DOMESTIC PET (TENGLISH)</span>
+                        <span class="scenario-badge-safe">SAFE (NORMAL)</span>
+                    </div>
+                    <div class="scenario-text">"Maa intlo kukka chala baguntundi, pempudu janthuvu"</div>
+                </div>
+
+                <div class="scenario-btn" onclick="loadScenario(15)">
+                    <div class="scenario-label">
+                        <span>[TE] #16 PASSIONATE CRAZE (TENGLISH)</span>
+                        <span class="scenario-badge-safe">SAFE (NORMAL)</span>
+                    </div>
+                    <div class="scenario-text">"Naku cricket ante chala pichi, matches chusthanu"</div>
+                </div>
+
+                <div class="scenario-btn" onclick="loadScenario(16)">
+                    <div class="scenario-label">
+                        <span>[TE] #17 DIRECT DEATH THREAT (TENGLISH)</span>
+                        <span class="scenario-badge-hate">HATE SPEECH / THREAT</span>
+                    </div>
+                    <div class="scenario-text">"Ninnu champesta, pranam teesta chusuko"</div>
+                </div>
+
+                <div class="scenario-btn" onclick="loadScenario(17)">
+                    <div class="scenario-label">
+                        <span>[TE] #18 TELUGU SCRIPT (PET DOG)</span>
+                        <span class="scenario-badge-safe">SAFE (NORMAL)</span>
+                    </div>
+                    <div class="scenario-text">"మా ఇంట్లో కుక్క చాలా ముద్దుగా ఉంటుంది, మా పెంపుడు పెట్"</div>
+                </div>
+
+            </div>
+
+        </aside>
+
+        <!-- CENTER COLUMN: 3D HOLOGRAPHIC AVATAR COCKPIT -->
+        <main class="hud-card holo-stage-card" id="centerStage">
+            <span class="card-corner corner-tl"></span>
+            <span class="card-corner corner-tr"></span>
+            <span class="card-corner corner-bl"></span>
+            <span class="card-corner corner-br"></span>
+
+            <!-- Top Overlay Info -->
+            <div class="holo-header-overlay">
+                <div class="holo-title">//CYBER_HOLOGRAM_COCKPIT</div>
+                <div class="holo-mode-pill">
+                    <button class="mode-chip active" id="chipMovieHolo" onclick="setHoloMode('movie')">✨ 3D MOVIE PARTICLES</button>
+                    <button class="mode-chip" id="chipNeuralHolo" onclick="setHoloMode('neural')">🌐 NEURAL FILAMENTS</button>
+                    <button class="mode-chip" id="chipWireframe" onclick="setHoloMode('wireframe')">⚡ CYBER WIREFRAME</button>
+                    <button class="mode-chip" id="chipParticles" onclick="setHoloMode('particles')">🌌 QUANTUM SWARM</button>
+                    <button class="mode-chip" style="background:var(--neon-green); color:#03060f; font-weight:800; box-shadow:0 0 10px var(--neon-green-glow);" onclick="triggerVoiceGreeting()">🎙️ TALK / TEST</button>
+                    <button class="mode-chip" style="background:rgba(255,0,85,0.2); border:1px solid var(--neon-pink); color:var(--neon-pink);" onclick="openMatrixModal()">⚙️ HUD MATRIX</button>
+                </div>
+            </div>
+
+            <!-- Reticles and Radar Overlays -->
+            <div class="holo-reticle-overlay">
+                <div class="radar-grid"></div>
+                <div class="radar-grid-inner"></div>
+                <div class="holo-speech-aura" id="speechAura"></div>
+            </div>
+
+            <!-- Three.js 3D WebGL Canvas Container -->
+            <div id="hologramCanvasContainer"></div>
+
+            <!-- Live Hologram Dialogue / Speech Output Panel -->
+            <div class="avatar-dialogue-panel" id="dialoguePanel">
+                <div class="speech-indicator-icon" id="speechIcon">🎙️</div>
+                <div class="speech-content">
+                    <div class="speech-speaker-name">//AI_AVATAR_AUDIO_SYNTHESIS:</div>
+                    <div class="speech-text-box" id="avatarDialogue">
+                        "Initialising neural cortex... Ready to process multilingual text and audio inputs."
+                    </div>
+                </div>
+                <button class="voice-playback-btn" onclick="repeatVoiceResponse()">
+                    <span>🔊</span> REPLAY VOICE
+                </button>
+            </div>
+
+            <!-- User Text/Mic Input Bar -->
+            <div class="interactive-input-bar">
+                <button class="mic-btn-action" id="btnMic" onclick="toggleMicrophone()" title="Toggle Voice Recognition">
+                    🎙️
+                </button>
+                <select id="micLangSelect" class="mic-lang-select" onchange="changeMicLanguage(this.value)" title="Choose Voice Recognition Language">
+                    <option value="en-US">🇺🇸 EN (English)</option>
+                    <option value="hi-IN" selected>🇮🇳 HI (हिन्दी / Hinglish)</option>
+                    <option value="te-IN">🇮🇳 TE (తెలుగు)</option>
+                </select>
+                <input type="text" class="custom-text-input" id="userInputText" placeholder="Type or speak in Hindi / Hinglish / English / Telugu to test..." value="Mandir mein ghanta baj raha hai, aarti ka samay ho gaya">
+                <button class="action-btn" onclick="executeInference()">
+                    <span>ANALYZE</span> ⚡
+                </button>
+            </div>
+
+        </main>
+
+        <!-- RIGHT COLUMN: BERT REASONING & METRICS -->
+        <aside class="hud-card pink-border">
+            <span class="card-corner corner-tl"></span>
+            <span class="card-corner corner-tr"></span>
+            <span class="card-corner corner-bl"></span>
+            <span class="card-corner corner-br"></span>
+
+            <div class="card-tag pink">
+                <span>//CONTEXT_REASONING_ENGINE</span>
+                <span id="threatScoreBadge" style="color:var(--neon-green);">THREAT: 0%</span>
+            </div>
+
+            <!-- Verdict Banner -->
+            <div class="verdict-banner verdict-normal" id="verdictBanner">
+                <div class="verdict-title" id="verdictTitle">🛡️ NORMAL / SAFE</div>
+                <div class="verdict-reason" id="verdictReason">
+                    🔔 "Ghanta" detected in religious/bell context (mandir/aarti) — classified as Normal & Safe.
+                </div>
+            </div>
+
+            <!-- Context Breakdown Matrix -->
+            <div class="context-matrix-card">
+                <div class="matrix-row">
+                    <span class="matrix-label">KEYWORD IDENTIFIED:</span>
+                    <span class="matrix-val" id="matKeyword">"ghanta"</span>
+                </div>
+                <div class="matrix-row">
+                    <span class="matrix-label">DETECTED SEMANTICS:</span>
+                    <span class="matrix-val" id="matSemantics" style="color:var(--neon-green);">RELIGIOUS BELL / TIME</span>
+                </div>
+                <div class="matrix-row">
+                    <span class="matrix-label">INTENT CATEGORY:</span>
+                    <span class="matrix-val" id="matIntent">BENIGN DEVOTIONAL</span>
+                </div>
+                <div class="matrix-row">
+                    <span class="matrix-label">MULTILINGUAL SCRIPT:</span>
+                    <span class="matrix-val" id="matScript">ROMANIZED HINGLISH</span>
+                </div>
+            </div>
+
+            <!-- BERT Attention Visualization -->
+            <div class="card-tag" style="margin-top:6px;">
+                <span>//BERT_ATTENTION_WEIGHTS</span>
+                <span>MULTI-HEAD ATTN</span>
+            </div>
+            <div class="attention-map-wrap">
+                <div style="font-family:'Share Tech Mono', monospace; font-size:0.68rem; color:var(--text-dim);">
+                    TOKEN IMPORTANCE DISTRIBUTION:
+                </div>
+                <div class="attention-tokens" id="attentionTokens">
+                    <!-- Tokens will be populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Live Terminal Log -->
+            <div class="card-tag" style="margin-top:14px;">
+                <span>//AI_SYSTEM_TELEMETRY</span>
+                <span>LOG STREAM</span>
+            </div>
+            <div class="terminal-box" id="termLogs">
+                <div class="term-line"><span class="term-ts">[11:00:02]</span> Three.js WebGL initialized.</div>
+                <div class="term-line"><span class="term-ts">[11:00:03]</span> 3D Cybernetic Head Mesh constructed.</div>
+                <div class="term-line"><span class="term-ts">[11:00:04]</span> <span class="term-ok">Multilingual BERT context weights mapped.</span></div>
+                <div class="term-line"><span class="term-ts">[11:00:05]</span> Web Speech synthesis engine online.</div>
+            </div>
+
+        </aside>
+
+    </div>
+
+    <!-- JAVASCRIPT: THREE.JS 3D HOLOGRAM + CONTEXT REASONING + SPEECH SYNTHESIS -->
+    <script>
+        // =========================================================================
+        // 1. DATASETS & MULTILINGUAL BERT CONTEXT KNOWLEDGE BASE
+        // =========================================================================
+        const SCENARIOS = [
+            // Scenario 0: [EN] Praise Metaphor ("killing it")
+            {
+                text: "You are killing it on stage tonight, awesome performance!",
+                verdict: "Normal",
+                verdictTitle: "🛡️ NORMAL / SAFE",
+                reason: "⚡ 'Killing it' detected as colloquial performance praise / positive metaphor — classified as Normal.",
+                threatScore: 0,
+                keyword: "killing it",
+                semantics: "STAGE PERFORMANCE PRAISE",
+                intent: "HIGH COMMENDATION / ENCOURAGEMENT",
+                script: "STANDARD ENGLISH (LATIN)",
+                tokens: [
+                    { t: "You", safe: false },
+                    { t: "are", safe: false },
+                    { t: "killing", high: true },
+                    { t: "it", high: true },
+                    { t: "on", safe: false },
+                    { t: "stage", safe: true },
+                    { t: "tonight", safe: false },
+                    { t: "awesome", safe: true },
+                    { t: "performance", safe: true }
+                ],
+                speech: "Colloquial praise metaphor verified. The phrase 'killing it' refers to an exceptional stage performance. Classified as safe and normal."
+            },
+            // Scenario 1: [EN] Canine Breeding ("bitch" = female dog)
+            {
+                text: "The champion female dog gave birth to five healthy puppies",
+                verdict: "Normal",
+                verdictTitle: "🛡️ NORMAL / SAFE",
+                reason: "🐕 Biological canine context detected (female dog / puppies / birth) — classified as Normal.",
+                threatScore: 0,
+                keyword: "female dog",
+                semantics: "CANINE ZOOLOGY / REPRODUCTION",
+                intent: "OBJECTIVE VETERINARY OBSERVATION",
+                script: "STANDARD ENGLISH (LATIN)",
+                tokens: [
+                    { t: "The", safe: false },
+                    { t: "champion", safe: true },
+                    { t: "female", safe: true },
+                    { t: "dog", safe: true },
+                    { t: "gave", safe: false },
+                    { t: "birth", safe: true },
+                    { t: "to", safe: false },
+                    { t: "five", safe: false },
+                    { t: "healthy", safe: true },
+                    { t: "puppies", safe: true }
+                ],
+                speech: "Biological canine breeding context verified. The terminology refers strictly to animals. Result is safe and benign."
+            },
+            // Scenario 2: [EN] Video Production ("shoot a video")
+            {
+                text: "Let's shoot a promotional video in the central park tomorrow",
+                verdict: "Normal",
+                verdictTitle: "🛡️ NORMAL / SAFE",
+                reason: "🎥 'Shoot' detected in cinematography / camera recording context (video, park) — classified as Normal.",
+                threatScore: 0,
+                keyword: "shoot a video",
+                semantics: "CINEMATOGRAPHY / CAMERA FILMING",
+                intent: "CREATIVE PRODUCTION COLLABORATION",
+                script: "STANDARD ENGLISH (LATIN)",
+                tokens: [
+                    { t: "Let's", safe: false },
+                    { t: "shoot", high: true },
+                    { t: "a", safe: false },
+                    { t: "promotional", safe: true },
+                    { t: "video", safe: true },
+                    { t: "in", safe: false },
+                    { t: "the", safe: false },
+                    { t: "central", safe: false },
+                    { t: "park", safe: true },
+                    { t: "tomorrow", safe: false }
+                ],
+                speech: "Media production context verified. The word 'shoot' refers to camera filming in the park. Result is safe."
+            },
+            // Scenario 3: [EN] Modern Youth Slang ("sick")
+            {
+                text: "That skateboard trick you pulled off was completely sick!",
+                verdict: "Normal",
+                verdictTitle: "🛡️ NORMAL / SAFE",
+                reason: "🛹 'Sick' detected in modern urban slang context (skateboard trick) denoting high excellence — Normal.",
+                threatScore: 1,
+                keyword: "sick",
+                semantics: "URBAN SLANG / EXCELLENCE",
+                intent: "PEER ADMIRATION / ENTHUSIASM",
+                script: "STANDARD ENGLISH (LATIN)",
+                tokens: [
+                    { t: "That", safe: false },
+                    { t: "skateboard", safe: true },
+                    { t: "trick", safe: true },
+                    { t: "you", safe: false },
+                    { t: "pulled", safe: false },
+                    { t: "off", safe: false },
+                    { t: "was", safe: false },
+                    { t: "completely", safe: false },
+                    { t: "sick", high: true }
+                ],
+                speech: "Modern youth slang verified. The term 'sick' expresses excitement and praise. Classified as safe and normal."
+            },
+            // Scenario 4: [EN] Direct Death Threat
+            {
+                text: "I will kill you and burn your house down, you scum",
+                verdict: "Hate Speech",
+                verdictTitle: "🚨 HATE SPEECH / VIOLENT THREAT",
+                reason: "🚨 Explicit lethal threat to life ('will kill you') paired with targeted violence and arson — Red Alert.",
+                threatScore: 98,
+                keyword: "will kill you",
+                semantics: "LETHAL VIOLENCE / ARSON THREAT",
+                intent: "MALICIOUS INTIMIDATION & TERROR",
+                script: "STANDARD ENGLISH (LATIN)",
+                tokens: [
+                    { t: "I", safe: false },
+                    { t: "will", high: true },
+                    { t: "kill", high: true },
+                    { t: "you", high: true },
+                    { t: "and", safe: false },
+                    { t: "burn", high: true },
+                    { t: "your", safe: false },
+                    { t: "house", safe: false },
+                    { t: "down", safe: false },
+                    { t: "you", safe: false },
+                    { t: "scum", high: true }
+                ],
+                speech: "Red alert! Direct violent threat to life and arson detected. Threat score is ninety-eight percent. Classified as hate speech."
+            },
+            // Scenario 5: [EN] Misogynistic Slur
+            {
+                text: "Shut up you useless bitch and get out of here",
+                verdict: "Offensive",
+                verdictTitle: "⚠️ OFFENSIVE / SLUR",
+                reason: "⚠️ 'Bitch' detected as targeted misogynistic abuse / verbal harassment — classified as Offensive.",
+                threatScore: 78,
+                keyword: "bitch",
+                semantics: "GENDER-BASED TARGETED SLUR",
+                intent: "HUMILIATION & HOSTILITY",
+                script: "STANDARD ENGLISH (LATIN)",
+                tokens: [
+                    { t: "Shut", high: true },
+                    { t: "up", high: true },
+                    { t: "you", safe: false },
+                    { t: "useless", high: true },
+                    { t: "bitch", high: true },
+                    { t: "and", safe: false },
+                    { t: "get", safe: false },
+                    { t: "out", safe: false }
+                ],
+                speech: "Warning! Targeted misogynistic insult detected. The term 'bitch' is used to demean. Classified as offensive profanity."
+            },
+            // Scenario 6: [HI] Religious Bell
+            {
+                text: "Mandir mein ghanta baj raha hai, aarti ka samay ho gaya",
+                verdict: "Normal",
+                verdictTitle: "🛡️ NORMAL / SAFE",
+                reason: "🔔 'Ghanta' detected in religious/bell context (mandir/aarti) — classified as Benign Devotional.",
+                threatScore: 0,
+                keyword: "ghanta",
+                semantics: "RELIGIOUS BELL / TIME DURATION",
+                intent: "BENIGN DEVOTIONAL",
+                script: "ROMANIZED HINGLISH",
+                tokens: [
+                    { t: "Mandir", safe: true },
+                    { t: "mein", safe: false },
+                    { t: "ghanta", high: true },
+                    { t: "baj", safe: true },
+                    { t: "raha", safe: false },
+                    { t: "hai", safe: false },
+                    { t: "aarti", safe: true },
+                    { t: "ka", safe: false },
+                    { t: "samay", safe: true }
+                ],
+                speech: "मंदिर की घंटी और आरती का संदर्भ सत्यापित हुआ। वाक्य पूरी तरह सुरक्षित और सामान्य है।"
+            },
+            // Scenario 7: [HI] Vulgar Slang
+            {
+                text: "Ghanta farak padta hai mujhe teri baaton se",
+                verdict: "Offensive",
+                verdictTitle: "⚠️ OFFENSIVE / SLANG",
+                reason: "⚠️ 'Ghanta' detected as informal dismissive slang (vulgar colloquial negation).",
+                threatScore: 48,
+                keyword: "ghanta",
+                semantics: "VULGAR DISMISSIVE SLANG",
+                intent: "CASUAL CONTEMPT",
+                script: "ROMANIZED HINGLISH",
+                tokens: [
+                    { t: "Ghanta", high: true },
+                    { t: "farak", high: true },
+                    { t: "padta", safe: false },
+                    { t: "hai", safe: false },
+                    { t: "mujhe", safe: false },
+                    { t: "teri", safe: false },
+                    { t: "baaton", safe: false }
+                ],
+                speech: "ध्यान दें। यहाँ घंटा शब्द का प्रयोग स्लैंग के रूप में हुआ है। यह ऑफेंसिव भाषा की श्रेणी में आता है।"
+            },
+            // Scenario 8: [HI] Domestic Pet
+            {
+                text: "Mera kutta bahut pyaara aur samajhdaar hai",
+                verdict: "Normal",
+                verdictTitle: "🛡️ NORMAL / SAFE",
+                reason: "🐕 'Kutta' detected in domestic pet context (pyaara, samajhdaar) — benign animal reference.",
+                threatScore: 2,
+                keyword: "kutta",
+                semantics: "CANINE PET / DOMESTIC ANIMAL",
+                intent: "AFFECTIONATE EXPRESSION",
+                script: "ROMANIZED HINGLISH",
+                tokens: [
+                    { t: "Mera", safe: false },
+                    { t: "kutta", high: true },
+                    { t: "bahut", safe: false },
+                    { t: "pyaara", safe: true },
+                    { t: "aur", safe: false },
+                    { t: "samajhdaar", safe: true }
+                ],
+                speech: "पालतू जानवर का संदर्भ सत्यापित हुआ। कुत्ता शब्द घरेलू पेट के लिए प्रयोग हुआ है। परिणाम सुरक्षित है।"
+            },
+            // Scenario 9: [HI] Targeted Death Threat
+            {
+                text: "Kutte kamine jaan se maar dunga tujhe dekh lena",
+                verdict: "Hate Speech",
+                verdictTitle: "🚨 HATE SPEECH / VIOLENT THREAT",
+                reason: "🚨 Severe direct threat to life ('jaan se maar dunga') combined with targeted abuse ('kutte kamine').",
+                threatScore: 98,
+                keyword: "jaan se maar dunga",
+                semantics: "LETHAL VIOLENT THREAT",
+                intent: "TARGETED HOSTILITY / VIOLENCE",
+                script: "ROMANIZED HINGLISH",
+                tokens: [
+                    { t: "Kutte", high: true },
+                    { t: "kamine", high: true },
+                    { t: "jaan", high: true },
+                    { t: "se", high: true },
+                    { t: "maar", high: true },
+                    { t: "dunga", high: true },
+                    { t: "tujhe", safe: false }
+                ],
+                speech: "रेड अलर्ट! गंभीर जानलेवा धमकी डिटेक्ट हुई है: जान से मार दूंगा। खतरा अठानवे प्रतिशत है। यह हेट स्पीच है।"
+            },
+            // Scenario 10: [HI] Farm Animal (Donkey)
+            {
+                text: "Khet mein gadha bojh utha raha hai, mehnati janwar hai",
+                verdict: "Normal",
+                verdictTitle: "🛡️ NORMAL / SAFE",
+                reason: "🫏 'Gadha' detected in agricultural animal context (khet/bojh/janwar) — benign working animal.",
+                threatScore: 1,
+                keyword: "gadha",
+                semantics: "AGRICULTURAL WORKING ANIMAL",
+                intent: "OBJECTIVE OBSERVATION",
+                script: "ROMANIZED HINGLISH",
+                tokens: [
+                    { t: "Khet", safe: true },
+                    { t: "mein", safe: false },
+                    { t: "gadha", high: true },
+                    { t: "bojh", safe: true },
+                    { t: "utha", safe: false },
+                    { t: "mehnati", safe: true },
+                    { t: "janwar", safe: true }
+                ],
+                speech: "कृषि और मेहनती पशु का संदर्भ सत्यापित हुआ। गधा शब्द जानवर के लिए प्रयुक्त हुआ है। परिणाम सुरक्षित है।"
+            },
+            // Scenario 11: [HI] Nocturnal Bird (Owl)
+            {
+                text: "Raat ko ped par ullu baitha hai, aakhein chamak rahi hain",
+                verdict: "Normal",
+                verdictTitle: "🛡️ NORMAL / SAFE",
+                reason: "🦉 'Ullu' detected in nocturnal wildlife/bird context (raat/ped/aakhein) — safe natural reference.",
+                threatScore: 0,
+                keyword: "ullu",
+                semantics: "NOCTURNAL AVIAN WILDLIFE",
+                intent: "NATURE OBSERVATION",
+                script: "ROMANIZED HINGLISH",
+                tokens: [
+                    { t: "Raat", safe: true },
+                    { t: "ped", safe: true },
+                    { t: "ullu", high: true },
+                    { t: "baitha", safe: false },
+                    { t: "aakhein", safe: true }
+                ],
+                speech: "प्राकृतिक पक्षी का संदर्भ सत्यापित हुआ। उल्लू शब्द रात के पक्षी के लिए प्रयुक्त हुआ है। परिणाम सुरक्षित।"
+            },
+            // Scenario 12: [HI] Brother-in-Law
+            {
+                text: "Mera saala bohot accha doctor hai, kal ghar aayega",
+                verdict: "Normal",
+                verdictTitle: "🛡️ NORMAL / SAFE",
+                reason: "👨‍👩‍👦 'Saala' detected in family kinship context (brother-in-law/doctor) — respectful relation.",
+                threatScore: 0,
+                keyword: "saala",
+                semantics: "FAMILY KINSHIP / BROTHER-IN-LAW",
+                intent: "RESPECTFUL CONVERSATION",
+                script: "ROMANIZED HINGLISH",
+                tokens: [
+                    { t: "Mera", safe: false },
+                    { t: "saala", high: true },
+                    { t: "accha", safe: true },
+                    { t: "doctor", safe: true },
+                    { t: "ghar", safe: true }
+                ],
+                speech: "पारिवारिक रिश्तेदार का संदर्भ सत्यापित हुआ। साला शब्द भाई-समान रिश्ते के लिए प्रयोग हुआ है। सुरक्षित।"
+            },
+            // Scenario 13: [HI] Polite Greeting
+            {
+                text: "नमस्ते, आप कैसे हैं? सब कुशल मंगल है ना?",
+                verdict: "Normal",
+                verdictTitle: "🛡️ NORMAL / SAFE",
+                reason: "✨ Courteous polite greeting in Hindi — zero toxicity or harassment detected.",
+                threatScore: 0,
+                keyword: "नमस्ते",
+                semantics: "POLITE SALUTATION",
+                intent: "CORDIAL INQUIRY",
+                script: "DEVANAGARI SCRIPT (HINDI)",
+                tokens: [
+                    { t: "नमस्ते", safe: true },
+                    { t: "आप", safe: false },
+                    { t: "कैसे", safe: false },
+                    { t: "कुशल", safe: true },
+                    { t: "मंगल", safe: true }
+                ],
+                speech: "अभिवादन स्वीकार है। देवनागरी हिंदी में शिष्टाचार बातचीत डिटेक्ट हुई। परिणाम पूरी तरह सुरक्षित।"
+            },
+            // Scenario 14: [TE] Domestic Pet (Tenglish)
+            {
+                text: "Maa intlo kukka chala baguntundi, pempudu janthuvu",
+                verdict: "Normal",
+                verdictTitle: "🛡️ NORMAL / SAFE",
+                reason: "🐕 'Kukka' (కుక్క) detected in domestic canine pet context in Telugu — classified as Normal.",
+                threatScore: 0,
+                keyword: "kukka",
+                semantics: "DOMESTIC CANINE PET / ANIMAL",
+                intent: "AFFECTIONATE PET CARE",
+                script: "ROMANIZED TELUGU (TENGLISH)",
+                tokens: [
+                    { t: "Maa", safe: true },
+                    { t: "intlo", safe: true },
+                    { t: "kukka", high: true },
+                    { t: "chala", safe: false },
+                    { t: "baguntundi", safe: true },
+                    { t: "pempudu", safe: true },
+                    { t: "janthuvu", safe: true }
+                ],
+                speech: "తెలుగు పెంపుడు జంతువు సందర్భం ధృవీకరించబడింది. కుక్క పదం ఇంట్లోని పెట్ కోసం వాడబడింది. ఫలితం సురక్షితం."
+            },
+            // Scenario 15: [TE] Passionate Craze (Tenglish)
+            {
+                text: "Naku cricket ante chala pichi, matches chusthanu",
+                verdict: "Normal",
+                verdictTitle: "🛡️ NORMAL / SAFE",
+                reason: "🏏 'Pichi' (పిచ్చి) detected in passionate sports fandom / hobby context in Telugu — classified as Normal.",
+                threatScore: 1,
+                keyword: "pichi",
+                semantics: "SPORTS PASSION / HOBBY CRAZE",
+                intent: "ENTHUSIASTIC ADMIRATION",
+                script: "ROMANIZED TELUGU (TENGLISH)",
+                tokens: [
+                    { t: "Naku", safe: false },
+                    { t: "cricket", safe: true },
+                    { t: "ante", safe: false },
+                    { t: "chala", safe: false },
+                    { t: "pichi", high: true },
+                    { t: "matches", safe: true },
+                    { t: "chusthanu", safe: true }
+                ],
+                speech: "క్రీడాభిమానం సందర్భం ధృవీకరించబడింది. పిచ్చి పదం క్రికెట్ ఆసక్తి కోసం వాడబడింది. ఫలితం సురక్షితం."
+            },
+            // Scenario 16: [TE] Direct Death Threat (Tenglish)
+            {
+                text: "Ninnu champesta, pranam teesta chusuko",
+                verdict: "Hate Speech",
+                verdictTitle: "🚨 HATE SPEECH / VIOLENT THREAT",
+                reason: "🚨 Severe lethal violent threat detected in Telugu ('champesta', 'pranam teesta') — Red Alert.",
+                threatScore: 98,
+                keyword: "champesta",
+                semantics: "LETHAL VIOLENT THREAT",
+                intent: "TARGETED HOSTILITY & TERROR",
+                script: "ROMANIZED TELUGU (TENGLISH)",
+                tokens: [
+                    { t: "Ninnu", high: true },
+                    { t: "champesta", high: true },
+                    { t: "pranam", high: true },
+                    { t: "teesta", high: true },
+                    { t: "chusuko", safe: false }
+                ],
+                speech: "రెడ్ అలర్ట్! తీవ్రమైన ప్రాణాపాయ బెదిరింపు కనుగొనబడింది: చంపేస్తా. ప్రమాద స్థాయి తొంభై ఎనిమిది శాతం. ఇది హేట్ స్పీచ్."
+            },
+            // Scenario 17: [TE] Telugu Script (Pet Dog)
+            {
+                text: "మా ఇంట్లో కుక్క చాలా ముద్దుగా ఉంటుంది, మా పెంపుడు పెట్",
+                verdict: "Normal",
+                verdictTitle: "🛡️ NORMAL / SAFE",
+                reason: "🐕 'కుక్క' domestic pet context (పెంపుడు కుక్క / ముద్దుగా) in Telugu Script — classified as Normal.",
+                threatScore: 0,
+                keyword: "కుక్క",
+                semantics: "DOMESTIC CANINE PET",
+                intent: "AFFECTIONATE PET CARE",
+                script: "TELUGU SCRIPT (తెలుగు లిపి)",
+                tokens: [
+                    { t: "మా", safe: true },
+                    { t: "ఇంట్లో", safe: true },
+                    { t: "కుక్క", high: true },
+                    { t: "చాలా", safe: false },
+                    { t: "ముద్దుగా", safe: true },
+                    { t: "ఉంటుంది", safe: false },
+                    { t: "పెంపుడు", safe: true },
+                    { t: "పెట్", safe: true }
+                ],
+                speech: "తెలుగు లిపిలో పెంపుడు జంతువు సందర్భం ధృవీకరించబడింది. కుక్క పదం ఇంటి పెట్ కోసం వాడబడింది. ఫలితం పూర్తిగా సురక్షితం."
+            }
+        ];
+
+        let currentActiveScenario = 0;
+        let lastSpokenText = "";
+
+        // =========================================================================
+        // 2. THREE.JS 3D PROCEDURAL MOVIE HOLOGRAPHIC FACE ENGINE
+        // =========================================================================
+        const container = document.getElementById('hologramCanvasContainer');
+        const scene = new THREE.Scene();
+
+        // Camera setup
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(0, 0, 7.2);
+
+        // WebGL Renderer with Alpha for pure holographic transparency
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        // Master Group for 3D Hologram Avatar
+        const holoHeadGroup = new THREE.Group();
+        scene.add(holoHeadGroup);
+
+        // Data arrays for Procedural 3D Holographic Particle Face Structure
+        let facePointGeo = new THREE.BufferGeometry();
+        let faceLineGeo = new THREE.BufferGeometry();
+        let origFacePositions = null;
+        let currentFacePositions = null;
+        let facePointColors = null;
+
+        // Specialized Landmark Indices for Dynamic Talking Speech & Articulation
+        const mouthLowerIndices = [];
+        const mouthUpperIndices = [];
+        const jawIndices = [];
+        const eyeIndices = [];
+        const lineIndexPairs = [];
+
+        // Materials
+        let currentThemeHex = 0x00f0ff;
+        const facePointMat = new THREE.PointsMaterial({
+            size: 0.052,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.94,
+            blending: THREE.AdditiveBlending
+        });
+
+        const faceLineMat = new THREE.LineBasicMaterial({
+            color: 0x00f0ff,
+            transparent: true,
+            opacity: 0.35,
+            blending: THREE.AdditiveBlending
+        });
+
+        const facePointCloudMesh = new THREE.Points(facePointGeo, facePointMat);
+        const faceLineMesh = new THREE.LineSegments(faceLineGeo, faceLineMat);
+        holoHeadGroup.add(facePointCloudMesh);
+        holoHeadGroup.add(faceLineMesh);
+
+        // Geometric Skull Core Wireframe (For Cyber Wireframe Mode)
+        const skullGeo = new THREE.SphereGeometry(1.4, 28, 22);
+        const sPos = skullGeo.attributes.position;
+        for (let i = 0; i < sPos.count; i++) {
+            let y = sPos.getY(i);
+            let z = sPos.getZ(i);
+            let x = sPos.getX(i);
+            if (y < 0) {
+                sPos.setX(i, x * (1 + y * 0.22));
+                sPos.setZ(i, z * (1 + y * 0.26));
+            }
+        }
+        skullGeo.computeVertexNormals();
+
+        const wireframeMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.7 });
+        const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.12 });
+        const headSkullMesh = new THREE.Mesh(skullGeo, wireframeMat);
+        const headCoreMesh = new THREE.Mesh(skullGeo.clone(), coreMat);
+        headCoreMesh.scale.set(0.95, 0.95, 0.95);
+        headSkullMesh.visible = false;
+        headCoreMesh.visible = false;
+        holoHeadGroup.add(headSkullMesh);
+        holoHeadGroup.add(headCoreMesh);
+
+        // Orbiting Gyroscopic Hologram Data Rings (Iron Man / Sci-Fi HUD look)
+        const ringGeo1 = new THREE.TorusGeometry(2.7, 0.015, 8, 80);
+        const ringMat1 = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.5 });
+        const dataRing1 = new THREE.Mesh(ringGeo1, ringMat1);
+        dataRing1.rotation.x = Math.PI / 2.3;
+        holoHeadGroup.add(dataRing1);
+
+        const ringGeo2 = new THREE.TorusGeometry(3.1, 0.012, 8, 80);
+        const ringMat2 = new THREE.MeshBasicMaterial({ color: 0xff0055, transparent: true, opacity: 0.4 });
+        const dataRing2 = new THREE.Mesh(ringGeo2, ringMat2);
+        dataRing2.rotation.y = Math.PI / 3;
+        holoHeadGroup.add(dataRing2);
+
+        // Acoustic Speech Wave Aura (Expands from mouth during speaking)
+        const speechWaveGeo = new THREE.TorusGeometry(0.35, 0.018, 8, 48);
+        const speechWaveMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.0 });
+        const speechWaveMesh = new THREE.Mesh(speechWaveGeo, speechWaveMat);
+        speechWaveMesh.position.set(0, -0.65, 0.65);
+        holoHeadGroup.add(speechWaveMesh);
+
+        // Ambient Swarm of Quantum Particles
+        const swarmCount = 1200;
+        const swarmGeo = new THREE.BufferGeometry();
+        const swarmPos = new Float32Array(swarmCount * 3);
+        for (let i = 0; i < swarmCount; i++) {
+            const rad = 2.0 + Math.random() * 1.8;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos((Math.random() * 2) - 1);
+            swarmPos[i * 3] = rad * Math.sin(phi) * Math.cos(theta);
+            swarmPos[i * 3 + 1] = rad * Math.sin(phi) * Math.sin(theta);
+            swarmPos[i * 3 + 2] = rad * Math.cos(phi);
+        }
+        swarmGeo.setAttribute('position', new THREE.BufferAttribute(swarmPos, 3));
+        const swarmMat = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 0.045,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending
+        });
+        const swarmSystem = new THREE.Points(swarmGeo, swarmMat);
+        holoHeadGroup.add(swarmSystem);
+
+        // =========================================================================
+        // PROCEDURAL 3D MOVIE-GRADE HOLOGRAPHIC FACE BUILDER (NO REAL PHOTO)
+        // =========================================================================
+        function buildMovieHolographicFace() {
+            const coords = [];
+            const colors = [];
+
+            // Helper to add point and color
+            function addPoint(x, y, z, r, g, b, landmarkType = 0) {
+                const idx = coords.length / 3;
+                coords.push(x, y, z);
+                colors.push(r, g, b);
+
+                if (landmarkType === 1) mouthLowerIndices.push(idx);
+                else if (landmarkType === 2) mouthUpperIndices.push(idx);
+                else if (landmarkType === 3) jawIndices.push(idx);
+                else if (landmarkType === 4) eyeIndices.push(idx);
+
+                return idx;
+            }
+
+            // 1. DENSE VOLUMETRIC FACE SURFACE HEIGHTMAP (48 x 56 grid)
+            const rows = 48;
+            const cols = 56;
+            const gridIndices = [];
+
+            for (let r = 0; r < rows; r++) {
+                gridIndices[r] = [];
+                const v = (r / (rows - 1)) * 2 - 1; // -1 to 1
+                const y = -v * 1.65; // Face Y: +1.65 (Forehead) to -1.65 (Neck/Chin)
+
+                for (let c = 0; c < cols; c++) {
+                    const u = (c / (cols - 1)) * 2 - 1; // -1 to 1
+                    const x = u * 1.30;
+
+                    // Elliptical radial boundary
+                    const radNorm = Math.sqrt(Math.pow(x / 1.28, 2) + Math.pow(y / 1.68, 2));
+                    if (radNorm > 1.04) {
+                        gridIndices[r][c] = -1;
+                        continue;
+                    }
+
+                    // Base 3D Facial Dome depth
+                    let z = Math.sqrt(Math.max(0, 1.05 - radNorm * radNorm)) * 0.82;
+
+                    // Anatomical Features Sculpting:
+                    // A. Forehead curvature
+                    if (y > 0.45) {
+                        z += Math.sin((y - 0.45) * 1.5) * 0.12;
+                    }
+
+                    // B. Eye Sockets (Depression)
+                    if (y > 0.12 && y < 0.48 && Math.abs(x) > 0.28 && Math.abs(x) < 0.74) {
+                        const eyeDist = Math.sqrt(Math.pow((Math.abs(x) - 0.51) / 0.23, 2) + Math.pow((y - 0.30) / 0.18, 2));
+                        if (eyeDist < 1.0) z -= (1 - eyeDist) * 0.32;
+                    }
+
+                    // C. 3D Sculpted Nose Bridge, Tip & Nostril Flares
+                    if (y > -0.36 && y < 0.46 && Math.abs(x) < 0.28) {
+                        const bridgeFalloff = 1 - Math.abs(x) / 0.28;
+                        z += bridgeFalloff * 0.42 * (1 + (0.46 - y) * 0.26);
+
+                        // Nose Tip protrusion
+                        const tipDist = Math.sqrt(Math.pow(x / 0.18, 2) + Math.pow((y + 0.22) / 0.15, 2));
+                        if (tipDist < 1.0) z += (1 - tipDist) * 0.34;
+                    }
+
+                    // D. Cheekbones (Zygomatic Arches)
+                    if (Math.abs(x) > 0.55 && Math.abs(x) < 1.15 && y > -0.15 && y < 0.36) {
+                        const cheekDist = Math.sqrt(Math.pow((Math.abs(x) - 0.82) / 0.30, 2) + Math.pow((y - 0.08) / 0.26, 2));
+                        if (cheekDist < 1.0) z += (1 - cheekDist) * 0.22;
+                    }
+
+                    // E. Upper Lip Contour
+                    if (y >= -0.58 && y <= -0.46 && Math.abs(x) < 0.62) {
+                        z += (1 - Math.abs(x) / 0.62) * 0.24;
+                    }
+
+                    // F. Mouth Opening Slit
+                    if (y > -0.66 && y < -0.58 && Math.abs(x) < 0.56) {
+                        z -= 0.14;
+                    }
+
+                    // G. Lower Lip Contour
+                    if (y >= -0.78 && y <= -0.66 && Math.abs(x) < 0.60) {
+                        z += (1 - Math.abs(x) / 0.60) * 0.26;
+                    }
+
+                    // H. Chin / Mandible Projection
+                    if (y < -0.95 && y > -1.50 && Math.abs(x) < 0.48) {
+                        const chinDist = Math.sqrt(Math.pow(x / 0.42, 2) + Math.pow((y + 1.25) / 0.28, 2));
+                        if (chinDist < 1.0) z += (1 - chinDist) * 0.30;
+                    }
+
+                    // Authentic Cyber Holographic Palette: Cyan, Electric Blue with White Accents
+                    let cr = 0.05;
+                    let cg = 0.88;
+                    let cb = 1.0;
+
+                    // Ocular & Nose Tip highlights
+                    if ((y > 0.18 && y < 0.40 && Math.abs(x) > 0.35 && Math.abs(x) < 0.65) || (Math.abs(x) < 0.15 && y > -0.30 && y < -0.12)) {
+                        cr = 0.80;
+                        cg = 0.98;
+                        cb = 1.0;
+                    }
+
+                    // Temple Cyber Nodes (Pink Neon Accent)
+                    if (Math.abs(x) > 1.05 && y > 0.15 && y < 0.55) {
+                        cr = 1.0;
+                        cg = 0.10;
+                        cb = 0.55;
+                    }
+
+                    let lmType = 0;
+                    if (y >= -0.78 && y <= -0.60 && Math.abs(x) < 0.60) lmType = 1; // Lower lip
+                    else if (y > -0.60 && y <= -0.46 && Math.abs(x) < 0.62) lmType = 2; // Upper lip
+                    else if (y < -0.78 && Math.abs(x) < 0.75) lmType = 3; // Jaw / Chin
+
+                    const pIdx = addPoint(x, y, z, cr, cg, cb, lmType);
+                    gridIndices[r][c] = pIdx;
+                }
+            }
+
+            // 2. CONNECTING NEURAL FILAMENTS (WIREFRAME CONSTELLATION LINES)
+            for (let r = 0; r < rows - 1; r += 2) {
+                for (let c = 0; c < cols - 1; c += 2) {
+                    const p1 = gridIndices[r][c];
+                    const p2 = gridIndices[r][c + 2];
+                    const p3 = gridIndices[r + 2] ? gridIndices[r + 2][c] : -1;
+
+                    if (p1 >= 0 && p2 >= 0) lineIndexPairs.push(p1, p2);
+                    if (p1 >= 0 && p3 >= 0) lineIndexPairs.push(p1, p3);
+                }
+            }
+
+            // 3. CYBERNETIC OCULAR EYE NODES (Concentric Glowing Rings + Pupils)
+            const eyeCenters = [{ x: -0.51, y: 0.29, z: 0.48 }, { x: 0.51, y: 0.29, z: 0.48 }];
+            eyeCenters.forEach(ec => {
+                // Central bright pupil node
+                addPoint(ec.x, ec.y, ec.z + 0.08, 1.0, 1.0, 1.0, 4);
+
+                // Concentric Ocular Rings
+                [0.08, 0.15, 0.22].forEach((radius, ringIdx) => {
+                    const ringPts = 16;
+                    let firstRingIdx = -1;
+                    let prevRingIdx = -1;
+
+                    for (let i = 0; i < ringPts; i++) {
+                        const ang = (i / ringPts) * Math.PI * 2;
+                        const px = ec.x + Math.cos(ang) * radius;
+                        const py = ec.y + Math.sin(ang) * radius * 0.85;
+                        const pz = ec.z + Math.cos(radius * 3) * 0.05;
+
+                        const curIdx = addPoint(px, py, pz, ringIdx === 0 ? 1.0 : 0.0, ringIdx === 0 ? 1.0 : 0.95, 1.0, 4);
+                        if (firstRingIdx === -1) firstRingIdx = curIdx;
+                        if (prevRingIdx !== -1) lineIndexPairs.push(prevRingIdx, curIdx);
+                        prevRingIdx = curIdx;
+                    }
+                    if (prevRingIdx !== -1 && firstRingIdx !== -1) {
+                        lineIndexPairs.push(prevRingIdx, firstRingIdx);
+                    }
+                });
+
+                // Horizontal scanning laser crosshair across eye
+                for (let k = -0.32; k <= 0.32; k += 0.05) {
+                    addPoint(ec.x + k, ec.y, ec.z + 0.06, 0.0, 1.0, 0.85, 4);
+                }
+            });
+
+            // 4. PRECISE LIP RIBBONS (For High-Fidelity Talking Lip-Sync)
+            const lipCount = 28;
+            for (let i = 0; i <= lipCount; i++) {
+                const u = (i / lipCount) * 2 - 1; // -1 to 1
+                const x = u * 0.55;
+
+                // Upper Lip Ribbon
+                const uy = -0.52 - Math.abs(x) * 0.10 + Math.sin(Math.abs(u) * Math.PI) * 0.04;
+                const uz = 0.72 - Math.pow(x, 2) * 0.35;
+                addPoint(x, uy, uz, 0.2, 0.95, 1.0, 2);
+
+                // Lower Lip Ribbon
+                const ly = -0.70 - Math.cos(u * Math.PI * 0.5) * 0.08;
+                const lz = 0.74 - Math.pow(x, 2) * 0.35;
+                addPoint(x, ly, lz, 0.0, 1.0, 0.95, 1);
+            }
+
+            // 5. JAWLINE / MANDIBLE ANATOMICAL ARC
+            const jawCount = 36;
+            for (let i = 0; i <= jawCount; i++) {
+                const t = (i / jawCount) * 2 - 1; // -1 to 1
+                const jx = t * 1.15;
+                const jy = -0.2 - Math.pow(jx / 1.15, 2) * 0.8 - (1 - Math.abs(t)) * 0.45;
+                const jz = 0.52 - Math.pow(jx / 1.15, 2) * 0.55;
+                addPoint(jx, jy, jz, 0.0, 0.85, 1.0, 3);
+            }
+
+            // Convert to Typed Arrays
+            origFacePositions = new Float32Array(coords);
+            currentFacePositions = new Float32Array(coords);
+            facePointColors = new Float32Array(colors);
+
+            facePointGeo.setAttribute('position', new THREE.BufferAttribute(currentFacePositions, 3));
+            facePointGeo.setAttribute('color', new THREE.BufferAttribute(facePointColors, 3));
+
+            // Set up Line Segments Geometry
+            const linePositions = new Float32Array(lineIndexPairs.length * 3);
+            for (let i = 0; i < lineIndexPairs.length; i++) {
+                const ptIdx = lineIndexPairs[i];
+                linePositions[i * 3] = origFacePositions[ptIdx * 3];
+                linePositions[i * 3 + 1] = origFacePositions[ptIdx * 3 + 1];
+                linePositions[i * 3 + 2] = origFacePositions[ptIdx * 3 + 2];
+            }
+            faceLineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+
+            logTerminal(`✨ Procedural Movie Hologram Face assembled: ${coords.length / 3} cyber particles + ${lineIndexPairs.length / 2} neural filaments.`);
+        }
+
+        buildMovieHolographicFace();
+
+        // Mouse Interactivity (Head follows cursor in 3D space)
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetRotationX = 0;
+        let targetRotationY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            mouseX = (x / rect.width) * 2 - 1;
+            mouseY = -(y / rect.height) * 2 + 1;
+            targetRotationY = mouseX * 0.45;
+            targetRotationX = -mouseY * 0.35;
+        });
+
+        // Speech & Audio Reactivity State
+        let isSpeakingState = false;
+        let clock = new THREE.Clock();
+
+        // Hologram Color Tint function (Safe = Cyan, Slang = Yellow, Threat = Red/Pink)
+        function updateHoloColorTheme(hexColor) {
+            currentThemeHex = hexColor;
+            wireframeMat.color.setHex(hexColor);
+            coreMat.color.setHex(hexColor);
+            faceLineMat.color.setHex(hexColor);
+            swarmMat.color.setHex(hexColor);
+            dataRing1.material.color.setHex(hexColor);
+            speechWaveMat.color.setHex(hexColor);
+        }
+
+        // =========================================================================
+        // RENDER LOOP & DYNAMIC TALKING LIP-SYNC ANIMATION
+        // =========================================================================
+        let frameCount = 0;
+        let lastFpsUpdate = performance.now();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const elapsedTime = clock.getElapsedTime();
+
+            // FPS Counter
+            frameCount++;
+            if (performance.now() - lastFpsUpdate >= 1000) {
+                document.getElementById('liveFps').textContent = frameCount;
+                frameCount = 0;
+                lastFpsUpdate = performance.now();
+            }
+
+            // Smooth head rotation towards target mouse coords
+            holoHeadGroup.rotation.y += (targetRotationY - holoHeadGroup.rotation.y) * 0.05;
+            holoHeadGroup.rotation.x += (targetRotationX - holoHeadGroup.rotation.x) * 0.05;
+
+            // Organic breathing / floating vertical bobbing
+            holoHeadGroup.position.y = Math.sin(elapsedTime * 1.5) * 0.12;
+
+            // Gyroscopic Ring Rotations
+            dataRing1.rotation.z = elapsedTime * 0.4;
+            dataRing2.rotation.x = elapsedTime * -0.3;
+            swarmSystem.rotation.y = elapsedTime * 0.06;
+
+            // =====================================================================
+            // TALKING LIP-SYNC & JAW MOVEMENT FOR MOVIE HOLOGRAPHIC PARTICLES
+            // =====================================================================
+            if (currentFacePositions && origFacePositions) {
+                const totalPoints = origFacePositions.length / 3;
+                const scanlineY = Math.sin(elapsedTime * 2.6) * 1.7;
+
+                // Dynamic Speech Modulation (Multi-frequency authentic vowel cadence)
+                let mouthOpen = 0;
+                if (isSpeakingState) {
+                    mouthOpen = Math.max(0, 
+                        (Math.sin(elapsedTime * 16) * 0.44 + 0.44) + 
+                        (Math.sin(elapsedTime * 28) * 0.18) + 
+                        (Math.sin(elapsedTime * 9) * 0.10)
+                    );
+
+                    // Pulse Acoustic Speech Wave Aura
+                    const waveCycle = (elapsedTime * 3.5) % 1.0;
+                    speechWaveMesh.scale.setScalar(1.0 + waveCycle * 2.4);
+                    speechWaveMat.opacity = (1.0 - waveCycle) * 0.75;
+                } else {
+                    speechWaveMat.opacity = 0;
+                }
+
+                // Displace Lower Lip & Mouth Points
+                mouthLowerIndices.forEach(idx => {
+                    const origX = origFacePositions[idx * 3];
+                    const origY = origFacePositions[idx * 3 + 1];
+                    const origZ = origFacePositions[idx * 3 + 2];
+                    const falloff = 1 - Math.min(1, Math.abs(origX) / 0.65);
+
+                    currentFacePositions[idx * 3] = origX * (1 + mouthOpen * 0.12);
+                    currentFacePositions[idx * 3 + 1] = origY - mouthOpen * 0.42 * falloff;
+                    currentFacePositions[idx * 3 + 2] = origZ + mouthOpen * 0.16 * falloff;
+                });
+
+                // Displace Upper Lip Points
+                mouthUpperIndices.forEach(idx => {
+                    const origX = origFacePositions[idx * 3];
+                    const origY = origFacePositions[idx * 3 + 1];
+                    const origZ = origFacePositions[idx * 3 + 2];
+                    const falloff = 1 - Math.min(1, Math.abs(origX) / 0.65);
+
+                    currentFacePositions[idx * 3 + 1] = origY + mouthOpen * 0.12 * falloff;
+                });
+
+                // Displace Jaw & Chin Points
+                jawIndices.forEach(idx => {
+                    const origX = origFacePositions[idx * 3];
+                    const origY = origFacePositions[idx * 3 + 1];
+                    const origZ = origFacePositions[idx * 3 + 2];
+                    const falloff = 1 - Math.min(1, Math.abs(origX) / 0.85);
+
+                    currentFacePositions[idx * 3 + 1] = origY - mouthOpen * 0.32 * falloff;
+                    currentFacePositions[idx * 3 + 2] = origZ + mouthOpen * 0.12 * falloff;
+                });
+
+                // Micro Quantum Shimmer & Scanline Glow
+                for (let i = 0; i < totalPoints; i++) {
+                    const idx = i * 3;
+                    const origY = origFacePositions[idx + 1];
+
+                    // Gentle subtle quantum vibration
+                    const shimmer = Math.sin(elapsedTime * 6 + origY * 5) * 0.012;
+
+                    // Holographic scanline beam pass
+                    const distToScan = Math.abs(origY - scanlineY);
+                    const scanGlow = distToScan < 0.22 ? (1 - distToScan / 0.22) * 0.08 : 0;
+
+                    if (!mouthLowerIndices.includes(i) && !jawIndices.includes(i) && !mouthUpperIndices.includes(i)) {
+                        currentFacePositions[idx + 1] = origY + shimmer;
+                        currentFacePositions[idx + 2] = origFacePositions[idx + 2] + scanGlow;
+                    }
+                }
+
+                facePointGeo.attributes.position.needsUpdate = true;
+
+                // Update Connecting Line Coordinates
+                const linePos = faceLineGeo.attributes.position.array;
+                for (let k = 0; k < lineIndexPairs.length; k++) {
+                    const ptIdx = lineIndexPairs[k];
+                    linePos[k * 3] = currentFacePositions[ptIdx * 3];
+                    linePos[k * 3 + 1] = currentFacePositions[ptIdx * 3 + 1];
+                    linePos[k * 3 + 2] = currentFacePositions[ptIdx * 3 + 2];
+                }
+                faceLineGeo.attributes.position.needsUpdate = true;
+            }
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Responsive Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+
+        // Hologram Mode Switcher
+        function setHoloMode(mode) {
+            document.querySelectorAll('.mode-chip').forEach(c => c.classList.remove('active'));
+
+            if (mode === 'movie') {
+                document.getElementById('chipMovieHolo').classList.add('active');
+                facePointCloudMesh.visible = true;
+                faceLineMesh.visible = true;
+                faceLineMat.opacity = 0.35;
+                facePointMat.size = 0.052;
+                headSkullMesh.visible = false;
+                headCoreMesh.visible = false;
+                swarmSystem.visible = true;
+                logTerminal("✨ Mode: 3D Movie-Grade Procedural Hologram Particle Face!");
+            } else if (mode === 'neural') {
+                document.getElementById('chipNeuralHolo').classList.add('active');
+                facePointCloudMesh.visible = true;
+                faceLineMesh.visible = true;
+                faceLineMat.opacity = 0.75;
+                facePointMat.size = 0.035;
+                headSkullMesh.visible = false;
+                headCoreMesh.visible = false;
+                swarmSystem.visible = true;
+                logTerminal("🌐 Mode: Neural Filaments & Laser Constellation Web.");
+            } else if (mode === 'wireframe') {
+                document.getElementById('chipWireframe').classList.add('active');
+                facePointCloudMesh.visible = false;
+                faceLineMesh.visible = false;
+                headSkullMesh.visible = true;
+                headCoreMesh.visible = true;
+                swarmSystem.visible = true;
+                logTerminal("⚙️ Mode: 3D Faceted Cyber Wireframe Skull Matrix.");
+            } else if (mode === 'particles') {
+                document.getElementById('chipParticles').classList.add('active');
+                facePointCloudMesh.visible = false;
+                faceLineMesh.visible = false;
+                headSkullMesh.visible = false;
+                headCoreMesh.visible = true;
+                swarmSystem.visible = true;
+                swarmMat.size = 0.07;
+                logTerminal("🌌 Mode: Quantum Particle Cloud Swarm.");
+            }
+        }
+
+        // =========================================================================
+        // 3. SPEECH SYNTHESIS (TTS) & VOICE RECOGNITION (MULTILINGUAL: EN, HI, TE)
+        // =========================================================================
+        let selectedHindiVoice = null;
+        let selectedEnglishVoice = null;
+        let selectedTeluguVoice = null;
+
+        function initVoices() {
+            if (!('speechSynthesis' in window)) return;
+            const updateVoiceList = () => {
+                const voices = window.speechSynthesis.getVoices();
+                // 1. Hindi Voice
+                selectedHindiVoice = voices.find(v => v.lang === 'hi-IN' || v.lang.startsWith('hi') || v.name.toLowerCase().includes('hindi') || v.name.includes('Kalpana') || v.name.includes('Hemant') || v.name.includes('Swara') || v.name.includes('Madhur'));
+                if (!selectedHindiVoice) {
+                    selectedHindiVoice = voices.find(v => v.lang === 'en-IN' || v.name.toLowerCase().includes('india') || v.name.includes('Ravi') || v.name.includes('Heera'));
+                }
+                // 2. English Voice
+                selectedEnglishVoice = voices.find(v => (v.lang === 'en-US' || v.lang === 'en-GB') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('David') || v.name.includes('Mark') || v.name.includes('Samantha') || v.name.includes('George') || v.name.includes('Zira')));
+                if (!selectedEnglishVoice) {
+                    selectedEnglishVoice = voices.find(v => v.lang && v.lang.startsWith('en'));
+                }
+                // 3. Telugu Voice (te-IN)
+                selectedTeluguVoice = voices.find(v => v.lang === 'te-IN' || v.lang.startsWith('te') || v.name.toLowerCase().includes('telugu') || v.name.includes('Mohan') || v.name.includes('Chitra') || v.name.includes('Shruti'));
+            };
+            updateVoiceList();
+            if (window.speechSynthesis.onvoiceschanged !== undefined) {
+                window.speechSynthesis.onvoiceschanged = updateVoiceList;
+            }
+        }
+        initVoices();
+
+        function detectLanguage(text) {
+            if (/[\u0C00-\u0C7F]/.test(text)) return 'telugu';
+            if (/[\u0900-\u097F]/.test(text)) return 'hindi';
+            
+            const lower = text.toLowerCase();
+            const tokens = lower.split(/[^a-zA-Z0-9\u0900-\u097F\u0C00-\u0C7F]+/);
+            
+            // Tenglish / Telugu Romanized markers
+            const tenglishMarkers = ['naku', 'ninnu', 'nuvvu', 'intlo', 'baguntundi', 'chala', 'ante', 'istam', 'pichi', 'pichodu', 'kukka', 'champesta', 'champestanu', 'pranam', 'teesta', 'donga', 'gadida', 'kodaka', 'vedhava', 'kurcho', 'musukuni', 'chusuko', 'unna', 'unnaru', 'ela', 'namaskaram', 'ra', 'andi', 'janthuvu', 'pempudu', 'chusthanu'];
+            if (tokens.some(t => tenglishMarkers.includes(t))) return 'tenglish';
+
+            // Hinglish markers
+            const hinglishMarkers = ['mein', 'hai', 'hain', 'ka', 'ki', 'ke', 'ko', 'se', 'mera', 'meri', 'mere', 'tera', 'teri', 'tere', 'raha', 'rahe', 'rahi', 'kutta', 'kutte', 'ghanta', 'ghante', 'gadha', 'gadhe', 'ullu', 'saala', 'saale', 'kamine', 'kamina', 'yaar', 'dost', 'khet', 'mandir', 'chup', 'aukaat', 'baaton', 'farak', 'jaan', 'maar', 'dunga', 'mat', 'banao', 'dekha', 'billi', 'pagal', 'hum', 'tum', 'aarti', 'samay', 'mehnati'];
+            if (tokens.some(t => hinglishMarkers.includes(t))) return 'hinglish';
+
+            return 'english';
+        }
+
+        function speakHologramText(phrase, explicitLang = null) {
+            if (!('speechSynthesis' in window)) {
+                console.warn("Web Speech API not supported in this browser.");
+                return;
+            }
+
+            window.speechSynthesis.cancel(); // Cancel pending
+
+            const utterance = new SpeechSynthesisUtterance(phrase);
+            const detectedLang = explicitLang || detectLanguage(phrase);
+
+            if (detectedLang === 'english') {
+                utterance.lang = 'en-US';
+                if (selectedEnglishVoice) utterance.voice = selectedEnglishVoice;
+            } else if (detectedLang === 'telugu' || detectedLang === 'tenglish') {
+                utterance.lang = 'te-IN';
+                if (selectedTeluguVoice) {
+                    utterance.voice = selectedTeluguVoice;
+                } else if (selectedHindiVoice) {
+                    utterance.voice = selectedHindiVoice; // Indian phonetic fallback
+                }
+            } else {
+                utterance.lang = 'hi-IN';
+                if (selectedHindiVoice) utterance.voice = selectedHindiVoice;
+            }
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+
+            // Trigger talking animation
+            utterance.onstart = () => {
+                isSpeakingState = true;
+                document.getElementById('centerStage').classList.add('speaking');
+            };
+
+            utterance.onend = () => {
+                isSpeakingState = false;
+                document.getElementById('centerStage').classList.remove('speaking');
+            };
+
+            utterance.onerror = () => {
+                isSpeakingState = false;
+                document.getElementById('centerStage').classList.remove('speaking');
+            };
+
+            lastSpokenText = phrase;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function triggerVoiceGreeting() {
+            const greeting = "Hello Priyanshu. 3D Holographic Cyber Cortex online. Multilingual BERT context engine operational for English, Hindi, Hinglish, and Telugu.";
+            document.getElementById('avatarDialogue').textContent = `"${greeting}"`;
+            speakHologramText(greeting, 'english');
+            logTerminal("🎙️ AI Hologram voice synthesis engaged: Multilingual ready (EN, HI, TE)...");
+        }
+
+        function repeatVoiceResponse() {
+            if (lastSpokenText) {
+                speakHologramText(lastSpokenText);
+            } else {
+                triggerVoiceGreeting();
+            }
+        }
+
+        // Microphone Voice Recognition (Live STT)
+        let recognition = null;
+        let isListening = false;
+        let currentMicLang = 'hi-IN';
+
+        function changeMicLanguage(val) {
+            currentMicLang = val;
+            if (recognition) {
+                recognition.lang = val;
+            }
+            const langName = val === 'en-US' ? 'English (US)' : (val === 'te-IN' ? 'Telugu (తెలుగు)' : 'Hindi / Hinglish (हिन्दी)');
+            logTerminal(`🎙️ Microphone language changed to: ${langName}`);
+        }
+
+        function toggleMicrophone() {
+            const micBtn = document.getElementById('btnMic');
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (!SpeechRecognition) {
+                alert("Speech recognition is not supported in this browser. Please type in the text box.");
+                return;
+            }
+
+            const sel = document.getElementById('micLangSelect');
+            if (sel) currentMicLang = sel.value;
+
+            if (!recognition) {
+                recognition = new SpeechRecognition();
+                recognition.lang = currentMicLang;
+                recognition.interimResults = false;
+
+                recognition.onstart = () => {
+                    isListening = true;
+                    micBtn.classList.add('recording');
+                    const langLabel = currentMicLang === 'en-US' ? 'English' : (currentMicLang === 'te-IN' ? 'Telugu' : 'Hindi/Hinglish');
+                    logTerminal(`Microphone active. Listening in ${langLabel}...`);
+                    document.getElementById('userInputText').placeholder = `Listening in ${langLabel}... Speak now...`;
+                };
+
+                recognition.onresult = (event) => {
+                    const speechResult = event.results[0][0].transcript;
+                    document.getElementById('userInputText').value = speechResult;
+                    logTerminal(`Voice transcribed: "${speechResult}"`);
+                    executeCustomInference(speechResult);
+                };
+
+                recognition.onerror = (e) => {
+                    console.error(e);
+                    isListening = false;
+                    micBtn.classList.remove('recording');
+                    document.getElementById('userInputText').placeholder = "Type or speak in Hindi / Hinglish / English / Telugu...";
+                };
+
+                recognition.onend = () => {
+                    isListening = false;
+                    micBtn.classList.remove('recording');
+                    document.getElementById('userInputText').placeholder = "Type or speak in Hindi / Hinglish / English / Telugu...";
+                };
+            } else {
+                recognition.lang = currentMicLang;
+            }
+
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        }
+
+        // =========================================================================
+        // 4. MULTILINGUAL BERT INFERENCE & CONTEXT DISAMBIGUATION ENGINE
+        // =========================================================================
+        const EXPLICIT_HATE_SPEECH_SET = [
+            // English death threats transcribed phonetically into Devanagari (from STT)
+            "आई वांट टू किल यू", "वांट टू किल यू", "आई विल किल यू", "विल किल यू", "किल यू", "शूट यू", "मर्डर यू", "आई वांट टू किल", "किल यू ऑल",
+            // Violent threats in Devanagari Hindi
+            "मार दूंगा", "मार डालूंगा", "मार डालूगा", "मार दुंगा", "जान से मार", "जान से मार दूंगा", "खत्म कर दूंगा", "गोली मार", "काट दूंगा",
+            "उड़ा दूंगा", "उड़ा दूंगा", "ज़िंदा जला", "जिंदा जला", "चीर दूंगा", "फाड़ दूंगा", "गला काट", "तबाह कर दूंगा",
+            // Violent threats in Hinglish (both 'mar' and 'maar', 'dunga', 'dalunga')
+            "mar dunga", "mar dungaa", "maar dunga", "maar dungaa", "mar dalunga", "maar dalunga",
+            "jaan se mar", "jaan se maar", "jaan se mar dunga", "jaan se maar dunga", "tujhe mar dunga", "tujhe maar dunga",
+            "tere ko mar dunga", "tere ko maar dunga", "marunga", "maarunga", "khatam kar dunga", "goli maar", "goli mar",
+            "kaat dunga", "uda dunga", "zinda jala", "cheer dunga", "tabah kar dunga",
+            // Violent threats in Telugu (Script & Tenglish)
+            "చంపేస్తా", "చంపేస్తాను", "నిన్ను చంపేస్తా", "నరికేస్తా", "నరికేస్తాను", "ప్రాణం తీస్తా", "ఖతం చేస్తా",
+            "champesta", "champestanu", "ninnu champesta", "narikesta", "narikestanu", "pranam teesta", "katham chesta",
+            // Violent threats in English
+            "i want to kill you", "want to kill you", "i will kill you", "will kill you", "kill you", "murder you", "shoot you",
+            "cut your throat", "burn you", "burn to death", "die you scum", "kill yourself",
+            // Communal / Terror / Identity slurs
+            "आतंकवादी", "जिहादी", "गद्दार", "देशद्रोही", "काफिर", "chakka", "hijra", "katue", "terrorist", "nazi", "faggot"
+        ];
+
+        const EXPLICIT_OFFENSIVE_SET = [
+            "हरामज़ादे", "हरामजादे", "हरामजादा", "हरामज़ादा", "हरामी", "हरामखोर",
+            "भोसड़ीके", "भोसड़ीके", "भोसडीके", "भोसडे", "भोसड़ा", "भोसुडी", "भोस्डी", "भोसड़ी",
+            "मादरचोद", "मदरचोद", "मादरजात", "बहनचोद", "बहेनचोद", "बेहेनचोद",
+            "चूतिया", "चूतिये", "चूतियापा", "चूत", "कमीना", "कमीने", "कमीनी",
+            "लौड़े", "लौंडे", "लंड", "लौड़ा", "लवड़े", "लवड़ा", "लावडे", "लावडा",
+            "गांडू", "गांड", "रांडी", "रंडी", "झांटू", "झांट", "भाड़वे", "भड़वे", "भड़वा",
+            "haramzade", "haramzada", "harami", "haramkhor", "bhosdike", "bhosdika", "bsdk",
+            "madarchod", "maderchod", "mc", "behenchod", "bhenchod", "bc", "bhenkelaude",
+            "chutiya", "chutiye", "gaand", "gandu", "kamina", "kamine",
+            "laude", "lodu", "loda", "lund", "lavde", "randi", "jhantu", "bhadwe",
+            // Telugu slurs & insults (Script & Tenglish)
+            "లంచోడు", "దొంగ నా కొడకా", "దవడ పగలగొడతా", "వెధవ", "నీ యమ్మ", "నీ అమ్మ", "ముండ", "బోకే", "లంజ",
+            "vedhava", "naa kodaka", "donga na kodaka", "lanja", "lanjamunda", "mundamopi", "boke", "nee amma", "gudha", "dengey",
+            // English slurs
+            "fuck", "fucking", "fcker", "bitch", "bastard", "asshole", "whore", "slut", "cunt"
+        ];
+
+        function loadScenario(index) {
+            currentActiveScenario = index;
+            const sc = SCENARIOS[index];
+
+            document.querySelectorAll('.scenario-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+
+            document.getElementById('userInputText').value = sc.text;
+            applyScenarioResult(sc);
+        }
+
+        function applyScenarioResult(sc) {
+            document.getElementById('avatarDialogue').textContent = `"${sc.speech}"`;
+
+            const banner = document.getElementById('verdictBanner');
+            banner.className = 'verdict-banner';
+            if (sc.verdict === 'Normal') {
+                banner.classList.add('verdict-normal');
+                updateHoloColorTheme(0x00f0ff);
+            } else if (sc.verdict === 'Offensive') {
+                banner.classList.add('verdict-offensive');
+                updateHoloColorTheme(0xfcee0a);
+            } else {
+                banner.classList.add('verdict-hate');
+                updateHoloColorTheme(0xff0055);
+            }
+
+            document.getElementById('verdictTitle').textContent = sc.verdictTitle;
+            document.getElementById('verdictReason').textContent = sc.reason;
+            document.getElementById('threatScoreBadge').textContent = `THREAT: ${sc.threatScore}%`;
+            document.getElementById('threatScoreBadge').style.color = sc.threatScore > 50 ? 'var(--neon-pink)' : (sc.threatScore > 20 ? 'var(--neon-yellow)' : 'var(--neon-green)');
+
+            document.getElementById('matKeyword').textContent = `"${sc.keyword}"`;
+            document.getElementById('matSemantics').textContent = sc.semantics;
+            document.getElementById('matIntent').textContent = sc.intent;
+            document.getElementById('matScript').textContent = sc.script;
+
+            const tokensBox = document.getElementById('attentionTokens');
+            tokensBox.innerHTML = '';
+            sc.tokens.forEach(tok => {
+                const el = document.createElement('span');
+                el.className = 'attn-token';
+                if (tok.high) el.classList.add('high-attn');
+                if (tok.safe) el.classList.add('safe-attn');
+                el.textContent = tok.t;
+                tokensBox.appendChild(el);
+            });
+
+            logTerminal(`Inference [${sc.verdict.toUpperCase()}]: ${sc.text.substring(0, 32)}...`);
+            speakHologramText(sc.speech);
+        }
+
+        function executeInference() {
+            const inputVal = document.getElementById('userInputText').value.trim();
+            if (!inputVal) return;
+            executeCustomInference(inputVal);
+        }
+
+        // Full Bilingual BERT Multilingual Context Analyzer
+        function executeCustomInference(text) {
+            const lower = text.toLowerCase();
+            const lang = detectLanguage(text);
+            const isEnglish = lang === 'english';
+            let detected = null;
+
+            // Check explicit threats & explicit slurs
+            const matchedThreats = EXPLICIT_HATE_SPEECH_SET.filter(t => lower.includes(t.toLowerCase()));
+            const matchedSlurs = EXPLICIT_OFFENSIVE_SET.filter(s => lower.includes(s.toLowerCase()));
+
+            // ========================================================
+            // A. ENGLISH CONTEXT CHECKS (Priority Disambiguation)
+            // ========================================================
+            // 1. "Kill" / "Killing" (Metaphor praise like "killing it" vs death threat)
+            if (isEnglish && (lower.includes('kill') || lower.includes('killing'))) {
+                const isPraise = lower.includes('stage') || lower.includes('performance') || lower.includes('show') || lower.includes('song') || lower.includes('dance') || lower.includes('killing it') || lower.includes('awesome') || lower.includes('crushed') || lower.includes('vibe') || lower.includes('tonight');
+                if (isPraise) {
+                    detected = {
+                        text: text,
+                        verdict: "Normal",
+                        verdictTitle: "🛡️ NORMAL / SAFE",
+                        reason: "⚡ 'Killing it' detected as colloquial performance praise / positive metaphor — classified as Normal.",
+                        threatScore: 0,
+                        keyword: "killing it",
+                        semantics: "STAGE PERFORMANCE PRAISE",
+                        intent: "HIGH COMMENDATION / ENCOURAGEMENT",
+                        script: "STANDARD ENGLISH (LATIN)",
+                        tokens: text.split(/\s+/).map(w => ({ t: w, high: w.toLowerCase().includes('kill'), safe: ['stage', 'performance', 'awesome', 'show'].includes(w.toLowerCase()) })),
+                        speech: "Colloquial praise metaphor verified. The phrase 'killing it' refers to an exceptional stage performance. Classified as safe and normal."
+                    };
+                }
+            }
+            // 2. "Bitch" (Biological canine female vs misogynistic slur)
+            if (!detected && isEnglish && lower.includes('bitch')) {
+                const isCanine = lower.includes('female') || lower.includes('dog') || lower.includes('puppy') || lower.includes('puppies') || lower.includes('litter') || lower.includes('breeder') || lower.includes('breeding') || lower.includes('canine') || lower.includes('animal') || lower.includes('vet');
+                if (isCanine) {
+                    detected = {
+                        text: text,
+                        verdict: "Normal",
+                        verdictTitle: "🛡️ NORMAL / SAFE",
+                        reason: "🐕 Biological canine context detected (female dog / puppies / breeding) — classified as Normal.",
+                        threatScore: 0,
+                        keyword: "bitch (female dog)",
+                        semantics: "CANINE ZOOLOGY / REPRODUCTION",
+                        intent: "OBJECTIVE VETERINARY OBSERVATION",
+                        script: "STANDARD ENGLISH (LATIN)",
+                        tokens: text.split(/\s+/).map(w => ({ t: w, high: w.toLowerCase().includes('bitch'), safe: ['dog', 'female', 'puppy', 'puppies'].includes(w.toLowerCase()) })),
+                        speech: "Biological canine breeding context verified. The term refers strictly to animals. Result is safe and benign."
+                    };
+                } else {
+                    detected = {
+                        text: text,
+                        verdict: "Offensive",
+                        verdictTitle: "⚠️ OFFENSIVE / SLUR",
+                        reason: "⚠️ 'Bitch' detected as targeted misogynistic abuse / verbal harassment — classified as Offensive.",
+                        threatScore: 78,
+                        keyword: "bitch",
+                        semantics: "GENDER-BASED TARGETED SLUR",
+                        intent: "HUMILIATION & HOSTILITY",
+                        script: "STANDARD ENGLISH (LATIN)",
+                        tokens: text.split(/\s+/).map(w => ({ t: w, high: true })),
+                        speech: "Warning! Targeted misogynistic insult detected. The term is used to demean. Classified as offensive profanity."
+                    };
+                }
+            }
+            // 3. "Shoot" (Cinematography video filming vs gun violence)
+            if (!detected && isEnglish && lower.includes('shoot')) {
+                const isFilming = lower.includes('video') || lower.includes('photo') || lower.includes('film') || lower.includes('camera') || lower.includes('scene') || lower.includes('movie') || lower.includes('park') || lower.includes('commercial') || lower.includes('picture') || lower.includes('hoops') || lower.includes('basketball');
+                if (isFilming) {
+                    detected = {
+                        text: text,
+                        verdict: "Normal",
+                        verdictTitle: "🛡️ NORMAL / SAFE",
+                        reason: "🎥 'Shoot' detected in cinematography / camera recording context — classified as Normal.",
+                        threatScore: 0,
+                        keyword: "shoot",
+                        semantics: "CINEMATOGRAPHY / CAMERA FILMING",
+                        intent: "CREATIVE PRODUCTION COLLABORATION",
+                        script: "STANDARD ENGLISH (LATIN)",
+                        tokens: text.split(/\s+/).map(w => ({ t: w, high: w.toLowerCase().includes('shoot'), safe: true })),
+                        speech: "Media production context verified. The word 'shoot' refers to camera filming. Result is safe."
+                    };
+                }
+            }
+            // 4. "Sick" (Urban slang for awesome vs insult)
+            if (!detected && isEnglish && lower.includes('sick')) {
+                const isAwesome = lower.includes('trick') || lower.includes('move') || lower.includes('skate') || lower.includes('skateboard') || lower.includes('beat') || lower.includes('music') || lower.includes('cool') || lower.includes('awesome') || lower.includes('guitar') || lower.includes('style');
+                if (isAwesome) {
+                    detected = {
+                        text: text,
+                        verdict: "Normal",
+                        verdictTitle: "🛡️ NORMAL / SAFE",
+                        reason: "🛹 'Sick' detected in modern urban slang context denoting high praise — classified as Normal.",
+                        threatScore: 1,
+                        keyword: "sick",
+                        semantics: "URBAN SLANG / EXCELLENCE",
+                        intent: "PEER ADMIRATION / ENTHUSIASM",
+                        script: "STANDARD ENGLISH (LATIN)",
+                        tokens: text.split(/\s+/).map(w => ({ t: w, high: w.toLowerCase().includes('sick'), safe: true })),
+                        speech: "Modern youth slang verified. The term 'sick' expresses excitement and praise. Classified as safe and normal."
+                    };
+                }
+            }
+            // 5. "Pig" (Livestock animal vs derogatory insult)
+            if (!detected && isEnglish && lower.includes('pig')) {
+                const isFarm = lower.includes('farm') || lower.includes('animal') || lower.includes('swine') || lower.includes('piglet') || lower.includes('mud') || lower.includes('barn') || lower.includes('agriculture') || lower.includes('livestock');
+                if (isFarm) {
+                    detected = {
+                        text: text,
+                        verdict: "Normal",
+                        verdictTitle: "🛡️ NORMAL / SAFE",
+                        reason: "🐖 'Pig' detected in farm animal / livestock context — classified as Normal.",
+                        threatScore: 0,
+                        keyword: "pig",
+                        semantics: "LIVESTOCK FARM ANIMAL",
+                        intent: "OBJECTIVE OBSERVATION",
+                        script: "STANDARD ENGLISH (LATIN)",
+                        tokens: text.split(/\s+/).map(w => ({ t: w, safe: true })),
+                        speech: "Farm animal context verified. The term 'pig' refers to livestock. Result is safe."
+                    };
+                } else {
+                    detected = {
+                        text: text,
+                        verdict: "Offensive",
+                        verdictTitle: "⚠️ OFFENSIVE / INSULT",
+                        reason: "⚠️ 'Pig' detected as derogatory insult targeting personal hygiene or character.",
+                        threatScore: 62,
+                        keyword: "pig",
+                        semantics: "DEROGATORY CHARACTER INSULT",
+                        intent: "HUMILIATION & RIDICULE",
+                        script: "STANDARD ENGLISH (LATIN)",
+                        tokens: text.split(/\s+/).map(w => ({ t: w, high: true })),
+                        speech: "Warning! The term 'pig' is used as a derogatory insult. Classified as offensive."
+                    };
+                }
+            }
+
+            // ========================================================
+            // B. TELUGU & TENGLISH CONTEXT CHECKS (కుక్క, పిచ్చి, దొంగ, గాడిద)
+            // ========================================================
+            const isTelugu = lang === 'telugu' || lang === 'tenglish';
+
+            // 1. Kukka / కుక్క (Domestic Pet vs Insult)
+            if (!detected && (lower.includes('kukka') || lower.includes('కుక్క'))) {
+                const isPet = lower.includes('maa') || lower.includes('మా') || lower.includes('intlo') || lower.includes('ఇంట్లో') || lower.includes('chala') || lower.includes('చాలా') || lower.includes('baguntundi') || lower.includes('బాగుంటుంది') || lower.includes('pet') || lower.includes('పెట్') || lower.includes('muddhu') || lower.includes('ముద్దు') || lower.includes('pempudu') || lower.includes('పెంపుడు') || lower.includes('pillalu') || lower.includes('పిల్లలు');
+                if (isPet) {
+                    detected = {
+                        text: text,
+                        verdict: "Normal",
+                        verdictTitle: "🛡️ NORMAL / SAFE",
+                        reason: "🐕 'Kukka' (కుక్క) detected in domestic canine pet context in Telugu — classified as Normal.",
+                        threatScore: 0,
+                        keyword: "kukka (కుక్క)",
+                        semantics: "CANINE DOMESTIC PET",
+                        intent: "AFFECTIONATE PET CARE",
+                        script: lang === 'telugu' ? "TELUGU SCRIPT (తెలుగు లిపి)" : "ROMANIZED TELUGU (TENGLISH)",
+                        tokens: text.split(/\s+/).map(w => ({ t: w, safe: true })),
+                        speech: "తెలుగు పెంపుడు జంతువు సందర్భం ధృవీకరించబడింది. కుక్క పదం ఇంటి పెట్ కోసం వాడబడింది. ఫలితం సురక్షితం."
+                    };
+                } else {
+                    detected = {
+                        text: text,
+                        verdict: "Offensive",
+                        verdictTitle: "⚠️ OFFENSIVE / INSULT",
+                        reason: "⚠️ 'Kukka' (కుక్క) used as targeted abusive insult in Telugu.",
+                        threatScore: 68,
+                        keyword: "kukka (కుక్క)",
+                        semantics: "TARGETED ABUSIVE INSULT",
+                        intent: "HUMILIATION & HOSTILITY",
+                        script: lang === 'telugu' ? "TELUGU SCRIPT (తెలుగు లిపి)" : "ROMANIZED TELUGU (TENGLISH)",
+                        tokens: text.split(/\s+/).map(w => ({ t: w, high: true })),
+                        speech: "హెచ్చరిక! కుక్క పదం వ్యక్తిగత దూషణగా వాడబడింది. ఇది అభ్యంతరకర భాష."
+                    };
+                }
+            }
+
+            // 2. Pichi / పిచ్చి (Passionate Craze vs Mental Derogation)
+            if (!detected && (lower.includes('pichi') || lower.includes('పిచ్చి') || lower.includes('pichodu') || lower.includes('పిచ్చోడు'))) {
+                const isCraze = lower.includes('cricket') || lower.includes('క్రికెట్') || lower.includes('cinema') || lower.includes('సినిమా') || lower.includes('songs') || lower.includes('పాటలు') || lower.includes('istam') || lower.includes('ఇష్టం') || lower.includes('prema') || lower.includes('ప్రేమ') || lower.includes('matches') || lower.includes('chusthanu');
+                if (isCraze) {
+                    detected = {
+                        text: text,
+                        verdict: "Normal",
+                        verdictTitle: "🛡️ NORMAL / SAFE",
+                        reason: "🏏 'Pichi' (పిచ్చి) detected in passionate sports fandom / hobby context in Telugu — classified as Normal.",
+                        threatScore: 1,
+                        keyword: "pichi (పిచ్చి)",
+                        semantics: "SPORTS PASSION / HOBBY CRAZE",
+                        intent: "ENTHUSIASTIC ADMIRATION",
+                        script: lang === 'telugu' ? "TELUGU SCRIPT (తెలుగు లిపి)" : "ROMANIZED TELUGU (TENGLISH)",
+                        tokens: text.split(/\s+/).map(w => ({ t: w, high: w.toLowerCase().includes('pichi') || w.includes('పిచ్చి'), safe: true })),
+                        speech: "క్రీడాభిమానం సందర్భం ధృవీకరించబడింది. పిచ్చి పదం అభిమానం కోసం వాడబడింది. ఫలితం సురక్షితం."
+                    };
+                } else {
+                    detected = {
+                        text: text,
+                        verdict: "Offensive",
+                        verdictTitle: "⚠️ OFFENSIVE / INSULT",
+                        reason: "⚠️ 'Pichi' (పిచ్చి) used as derogatory mental ridicule in Telugu.",
+                        threatScore: 56,
+                        keyword: "pichi",
+                        semantics: "COGNITIVE RIDICULE",
+                        intent: "VERBAL DEROGATION",
+                        script: lang === 'telugu' ? "TELUGU SCRIPT (తెలుగు లిపి)" : "ROMANIZED TELUGU (TENGLISH)",
+                        tokens: text.split(/\s+/).map(w => ({ t: w, high: true })),
+                        speech: "జాగ్రత్త! పిచ్చి పదం అవమానకరమైన పదంగా ఉపయోగించబడింది. ఇది అభ్యంతరకరం."
+                    };
+                }
+            }
+
+            // 3. Donga / దొంగ (Playful child teasing vs Criminal thief)
+            if (!detected && (lower.includes('donga') || lower.includes('దొంగ'))) {
+                const isChild = lower.includes('papa') || lower.includes('పాప') || lower.includes('babu') || lower.includes('బాబు') || lower.includes('chinna') || lower.includes('చిన్న') || lower.includes('navvu') || lower.includes('నవ్వు') || lower.includes('muddhu') || lower.includes('ముద్దు') || lower.includes('pillalu') || lower.includes('పిల్లలు');
+                if (isChild) {
+                    detected = {
+                        text: text,
+                        verdict: "Normal",
+                        verdictTitle: "🛡️ NORMAL / SAFE",
+                        reason: "👶 'Donga' (దొంగ) detected as affectionate playful teasing of a child in Telugu — classified as Normal.",
+                        threatScore: 0,
+                        keyword: "donga (దొంగ)",
+                        semantics: "AFFECTIONATE CHILD TEASING",
+                        intent: "WARM HUMOR",
+                        script: lang === 'telugu' ? "TELUGU SCRIPT (తెలుగు లిపి)" : "ROMANIZED TELUGU (TENGLISH)",
+                        tokens: text.split(/\s+/).map(w => ({ t: w, safe: true })),
+                        speech: "చిన్నపిల్లల ముద్దు పేచీ సందర్భం ధృవీకరించబడింది. ఫలితం పూర్తిగా సురక్షితం."
+                    };
+                } else {
+                    detected = {
+                        text: text,
+                        verdict: "Offensive",
+                        verdictTitle: "⚠️ OFFENSIVE / SLUR",
+                        reason: "⚠️ 'Donga' (దొంగ) used as abusive theft insult in Telugu.",
+                        threatScore: 65,
+                        keyword: "donga",
+                        semantics: "DEROGATORY INSULT",
+                        intent: "HOSTILE RIDICULE",
+                        script: lang === 'telugu' ? "TELUGU SCRIPT (తెలుగు లిపి)" : "ROMANIZED TELUGU (TENGLISH)",
+                        tokens: text.split(/\s+/).map(w => ({ t: w, high: true })),
+                        speech: "హెచ్చరిక! దొంగ పదం దూషణగా వాడబడింది. ఇది అభ్యంతరకరం."
+                    };
+                }
+            }
+
+            // 4. Gadida / గాడిద (Working Animal vs Donkey Insult)
+            if (!detected && (lower.includes('gadida') || lower.includes('గాడిద'))) {
+                const isAnimal = lower.includes('polam') || lower.includes('పొలం') || lower.includes('pashuvu') || lower.includes('పశువు') || lower.includes('pani') || lower.includes('పని') || lower.includes('baruvu') || lower.includes('బరువు') || lower.includes('janthuvu') || lower.includes('జంతువు');
+                if (isAnimal) {
+                    detected = {
+                        text: text,
+                        verdict: "Normal",
+                        verdictTitle: "🛡️ NORMAL / SAFE",
+                        reason: "🫏 'Gadida' (గాడిద) detected in working farm animal context in Telugu — classified as Normal.",
+                        threatScore: 1,
+                        keyword: "gadida (గాడిద)",
+                        semantics: "FARM WORKING ANIMAL",
+                        intent: "NATURAL DESCRIPTION",
+                        script: lang === 'telugu' ? "TELUGU SCRIPT (తెలుగు లిపి)" : "ROMANIZED TELUGU (TENGLISH)",
+                        tokens: text.split(/\s+/).map(w => ({ t: w, safe: true })),
+                        speech: "శ్రమించే జంతువు సందర్భం ధృవీకరించబడింది. ఫలితం సురక్షితం."
+                    };
+                } else {
+                    detected = {
+                        text: text,
+                        verdict: "Offensive",
+                        verdictTitle: "⚠️ OFFENSIVE / INSULT",
+                        reason: "⚠️ 'Gadida' (గాడిద) used as intellectual ridicule insult in Telugu.",
+                        threatScore: 58,
+                        keyword: "gadida",
+                        semantics: "COGNITIVE RIDICULE",
+                        intent: "VERBAL DEROGATION",
+                        script: lang === 'telugu' ? "TELUGU SCRIPT (తెలుగు లిపి)" : "ROMANIZED TELUGU (TENGLISH)",
+                        tokens: text.split(/\s+/).map(w => ({ t: w, high: true })),
+                        speech: "జాగ్రత్త! గాడిద పదం అవమానకరమైన తిట్టుగా వాడబడింది. ఇది అభ్యంతరకర భాష."
+                    };
+                }
+            }
+
+            // ========================================================
+            // C. VIOLENT THREATS & EXPLICIT PROFANITIES (EN, HI, TE)
+            // ========================================================
+            // Robust Regex Threat Suite (catches typos, extra spaces, phonetics, Devanagari English)
+            const THREAT_REGEXES = [
+                // Devanagari English phonetics (voice STT transliteration)
+                /(?:आई\s*)?(?:वांट\s*टू|विल)\s*किल\s*यू/i,
+                /किल\s*यू/i,
+                /शूट\s*यू/i,
+                /मर्डर\s*यू/i,
+                // Devanagari Hindi threats
+                /(?:जान\s*से\s*)?म[ा|ाँ]?र\s*(?:द[ूु][ं]?ग[ा|े|ी]|ड[ा|ाँ]ल[ूु][ं]?ग[ा|े|ी])/i,
+                /खत्?म\s*कर\s*द[ूु][ं]?ग[ा|े|ी]/i,
+                /गदन\s*क[ा|ाँ]ट/i,
+                /गोली\s*म[ा|ाँ]?र/i,
+                // Hinglish threats ("mar dunga", "maar dunga", "jaan se mar dunga", "tujhe mar dunga", etc.)
+                /(?:jaan\s*se\s*)?m[a]+r\s*(?:d[u|o]ng[a|e|i]|d[a]+lung[a|e|i])/i,
+                /tujhe\s+m[a]+r\s*d[u|o]ng[a|e|i]/i,
+                /tere\s*ko\s+m[a]+r\s*d[u|o]ng[a|e|i]/i,
+                /khatam\s*kar\s*d[u|o]ng[a|e|i]/i,
+                /goli\s*m[a]+r/i,
+                // English direct lethal threats
+                /(?:i\s*)?(?:want\s+to|will|gonna)\s+kill\s+you/i,
+                /\bkill\s+you(?:\s+all|\s+now)?\b/i,
+                /\bmurder\s+you\b/i,
+                /\bshoot\s+you\s+(?:dead|down)?\b/i,
+                /\bcut\s+your\s+throat\b/i,
+                // Telugu violent threats
+                /(?:నిన్ను\s*)?చంపేస్తా/i,
+                /(?:ninnu\s*)?champ[e|a]st[a|u]/i,
+                /pranam\s*teest[a|u]/i
+            ];
+
+            const matchedRegex = THREAT_REGEXES.find(rx => rx.test(text));
+            const isThreatDetected = !detected && (matchedThreats.length > 0 || !!matchedRegex);
+
+            if (isThreatDetected) {
+                const threatWord = matchedThreats.length > 0 
+                    ? matchedThreats[0] 
+                    : (text.match(matchedRegex) ? text.match(matchedRegex)[0] : "Violent Threat");
+                const words = text.split(/\s+/);
+                const tokens = words.map(w => ({
+                    t: w,
+                    high: true
+                }));
+
+                const isDevanagari = /[\u0900-\u097F]/.test(text);
+                const isDevanagariEnglishPhonetic = /(?:वांट|विल|किल|शूट|मर्डर)\s*यू/i.test(text);
+
+                if (isDevanagariEnglishPhonetic) {
+                    detected = {
+                        text: text,
+                        verdict: "Hate Speech",
+                        verdictTitle: "🚨 HATE SPEECH / VIOLENT THREAT",
+                        reason: `🚨 देवनागरी में उच्चारित अंग्रेजी जानलेवा धमकी डिटेक्ट हुई: '${threatWord}' (Direct Lethal Threat / Hate Speech)`,
+                        threatScore: 98,
+                        keyword: threatWord,
+                        semantics: "LETHAL HOSTILITY / DEATH THREAT",
+                        intent: "DIRECT LIFE THREAT",
+                        script: "DEVANAGARI (PHONETIC ENGLISH SPEECH)",
+                        tokens: tokens,
+                        speech: `रेड अलर्ट! गंभीर जानलेवा धमकी डिटेक्ट हुई है: ${threatWord}। यह हेट स्पीच है। खतरा अठानवे प्रतिशत है।`
+                    };
+                } else if (isEnglish) {
+                    detected = {
+                        text: text,
+                        verdict: "Hate Speech",
+                        verdictTitle: "🚨 HATE SPEECH / VIOLENT THREAT",
+                        reason: `🚨 Lethal violent threat detected: '${threatWord}' (Direct violence / malice).`,
+                        threatScore: 98,
+                        keyword: threatWord,
+                        semantics: "LETHAL HOSTILITY / VIOLENCE",
+                        intent: "TARGETED DEATH THREAT",
+                        script: "STANDARD ENGLISH (LATIN)",
+                        tokens: tokens,
+                        speech: `Red alert! Direct violent threat to life detected: ${threatWord}. Threat score is ninety-eight percent. Classified as hate speech.`
+                    };
+                } else if (isTelugu) {
+                    detected = {
+                        text: text,
+                        verdict: "Hate Speech",
+                        verdictTitle: "🚨 HATE SPEECH / VIOLENT THREAT",
+                        reason: `🚨 తీవ్రమైన ప్రాణాపాయ బెదిరింపు కనుగొనబడింది: '${threatWord}' (హేట్ స్పీచ్)`,
+                        threatScore: 98,
+                        keyword: threatWord,
+                        semantics: "LETHAL HOSTILITY / VIOLENCE",
+                        intent: "TARGETED DEATH THREAT",
+                        script: lang === 'telugu' ? "TELUGU SCRIPT (తెలుగు లిపి)" : "ROMANIZED TELUGU (TENGLISH)",
+                        tokens: tokens,
+                        speech: `రెడ్ అలర్ట్! తీవ్రమైన ప్రాణాపాయ బెదిరింపు కనుగొనబడింది: ${threatWord}. ప్రమాద స్థాయి తొంభై ఎనిమిది శాతం. ఇది హేట్ స్పీచ్.`
+                    };
+                } else {
+                    detected = {
+                        text: text,
+                        verdict: "Hate Speech",
+                        verdictTitle: "🚨 HATE SPEECH / VIOLENT THREAT",
+                        reason: `🚨 गंभीर हिंसक धमकी डिटेक्ट हुई: '${threatWord}' (जानलेवा आक्रामकता / हेट स्पीच)`,
+                        threatScore: 98,
+                        keyword: threatWord,
+                        semantics: "LETHAL HOSTILITY / VIOLENCE",
+                        intent: "TARGETED DEATH THREAT",
+                        script: isDevanagari ? "DEVANAGARI SCRIPT (HINDI)" : "MULTILINGUAL (HINGLISH)",
+                        tokens: tokens,
+                        speech: `रेड अलर्ट! गंभीर जानलेवा धमकी डिटेक्ट हुई है: ${threatWord}। यह हेट स्पीच है। खतरा अठानवे प्रतिशत है।`
+                    };
+                }
+            } else if (!detected && matchedSlurs.length > 0) {
+                const slurWord = matchedSlurs[0];
+                const words = text.split(/\s+/);
+                const tokens = words.map(w => ({
+                    t: w,
+                    high: matchedSlurs.some(s => s.toLowerCase().includes(w.toLowerCase()))
+                }));
+
+                if (isEnglish) {
+                    detected = {
+                        text: text,
+                        verdict: "Offensive",
+                        verdictTitle: "⚠️ OFFENSIVE / PROFANITY",
+                        reason: `⚠️ Abusive profanity or insult detected: '${slurWord}'`,
+                        threatScore: 72,
+                        keyword: slurWord,
+                        semantics: "ABUSIVE PROFANITY / SLUR",
+                        intent: "INFORMAL HOSTILITY",
+                        script: "STANDARD ENGLISH (LATIN)",
+                        tokens: tokens,
+                        speech: `Warning! Abusive profanity detected: ${slurWord}. Classified as offensive language.`
+                    };
+                } else if (isTelugu) {
+                    detected = {
+                        text: text,
+                        verdict: "Offensive",
+                        verdictTitle: "⚠️ OFFENSIVE / PROFANITY",
+                        reason: `⚠️ అభ్యంతరకర దూషణ / తిట్టు గుర్తించబడింది: '${slurWord}'`,
+                        threatScore: 72,
+                        keyword: slurWord,
+                        semantics: "ABUSIVE PROFANITY / SLUR",
+                        intent: "INFORMAL HOSTILITY",
+                        script: lang === 'telugu' ? "TELUGU SCRIPT (తెలుగు లిపి)" : "ROMANIZED TELUGU (TENGLISH)",
+                        tokens: tokens,
+                        speech: `హెచ్చరిక! అభ్యంతరకర దూషణ గుర్తించబడింది: ${slurWord}. ఇది అభ్యంతరకర భాష.`
+                    };
+                } else {
+                    detected = {
+                        text: text,
+                        verdict: "Offensive",
+                        verdictTitle: "⚠️ OFFENSIVE / PROFANITY",
+                        reason: `⚠️ आपत्तिजनक अपशब्द / गाली डिटेक्ट हुई: '${slurWord}'`,
+                        threatScore: 72,
+                        keyword: slurWord,
+                        semantics: "ABUSIVE PROFANITY / SLUR",
+                        intent: "INFORMAL HOSTILITY",
+                        script: /[\u0900-\u097F]/.test(text) ? "DEVANAGARI SCRIPT (HINDI)" : "ROMANIZED HINGLISH",
+                        tokens: tokens,
+                        speech: `चेतावनी! आपत्तिजनक गाली डिटेक्ट हुई है: ${slurWord}। यह ऑफेंसिव भाषा की श्रेणी में आता है।`
+                    };
+                }
+            }
+
+            // ========================================================
+            // D. HINDI / HINGLISH CONTEXT WORDS (Ghanta, Kutta, Saala, Gadha, Ullu)
+            // ========================================================
+            if (!detected) {
+                // 3. Ghanta / घंटा
+                if (lower.includes('ghanta') || lower.includes('घंटा') || lower.includes('ghante') || lower.includes('घंटे')) {
+                    const isBell = lower.includes('mandir') || lower.includes('मंदिर') || lower.includes('temple') || lower.includes('pooja') || lower.includes('पूजा') || lower.includes('aarti') || lower.includes('आरती') || lower.includes('baj') || lower.includes('बज') || lower.includes('samay') || lower.includes('समय') || lower.includes('der') || lower.includes('देर');
+                    if (isBell) {
+                        detected = {
+                            text: text,
+                            verdict: "Normal",
+                            verdictTitle: "🛡️ NORMAL / SAFE",
+                            reason: "🔔 'घंटा' धार्मिक घंटी या समय के संदर्भ में पाया गया — सुरक्षित।",
+                            threatScore: 0,
+                            keyword: "घंटा",
+                            semantics: "RELIGIOUS BELL / TIME DURATION",
+                            intent: "BENIGN DEVOTIONAL",
+                            script: /[\u0900-\u097F]/.test(text) ? "DEVANAGARI SCRIPT" : "ROMANIZED HINGLISH",
+                            tokens: text.split(/\s+/).map(w => ({ t: w, safe: true })),
+                            speech: "मंदिर की घंटी और समय का संदर्भ सत्यापित हुआ। वाक्य पूरी तरह सुरक्षित और सामान्य है।"
+                        };
+                    } else {
+                        detected = {
+                            text: text,
+                            verdict: "Offensive",
+                            verdictTitle: "⚠️ OFFENSIVE / SLANG",
+                            reason: "⚠️ 'घंटा' शब्द का प्रयोग अपमानजनक स्लैंग के रूप में हुआ।",
+                            threatScore: 50,
+                            keyword: "घंटा",
+                            semantics: "VULGAR DISMISSIVE SLANG",
+                            intent: "INFORMAL CONTEMPT",
+                            script: /[\u0900-\u097F]/.test(text) ? "DEVANAGARI SCRIPT" : "ROMANIZED HINGLISH",
+                            tokens: text.split(/\s+/).map(w => ({ t: w, high: w.toLowerCase().includes('ghanta') || w.includes('घंटा') })),
+                            speech: "ध्यान दें। यहाँ घंटा शब्द का प्रयोग स्लैंग के रूप में हुआ है। यह ऑफेंसिव भाषा है।"
+                        };
+                    }
+                }
+                // 4. Kutta / कुत्ता
+                else if (lower.includes('kutta') || lower.includes('कुत्ता') || lower.includes('kutte') || lower.includes('कुत्ते')) {
+                    const isPet = lower.includes('mera') || lower.includes('मेरा') || lower.includes('pyaara') || lower.includes('प्यारा') || lower.includes('pet') || lower.includes('पालतू') || lower.includes('samajhdaar') || lower.includes('समझदार');
+                    if (isPet) {
+                        detected = {
+                            text: text,
+                            verdict: "Normal",
+                            verdictTitle: "🛡️ NORMAL / SAFE",
+                            reason: "🐕 'कुत्ता' घरेलू पालतू जानवर के संदर्भ में पाया गया — सुरक्षित।",
+                            threatScore: 2,
+                            keyword: "कुत्ता",
+                            semantics: "DOMESTIC PET / ANIMAL",
+                            intent: "AFFECTIONATE PET CARE",
+                            script: /[\u0900-\u097F]/.test(text) ? "DEVANAGARI SCRIPT" : "ROMANIZED HINGLISH",
+                            tokens: text.split(/\s+/).map(w => ({ t: w, safe: true })),
+                            speech: "पालतू जानवर का संदर्भ सत्यापित हुआ। कुत्ता शब्द घरेलू पेट के लिए प्रयोग हुआ है। परिणाम सुरक्षित है।"
+                        };
+                    } else {
+                        detected = {
+                            text: text,
+                            verdict: "Offensive",
+                            verdictTitle: "⚠️ OFFENSIVE / INSULT",
+                            reason: "⚠️ 'कुत्ता' किसी व्यक्ति को अपमानित करने के लिए प्रयुक्त हुआ।",
+                            threatScore: 68,
+                            keyword: "कुत्ता",
+                            semantics: "TARGETED ABUSIVE INSULT",
+                            intent: "HUMILIATION / VERBAL ABUSE",
+                            script: /[\u0900-\u097F]/.test(text) ? "DEVANAGARI SCRIPT" : "ROMANIZED HINGLISH",
+                            tokens: text.split(/\s+/).map(w => ({ t: w, high: true })),
+                            speech: "सावधान! कुत्ता शब्द व्यक्तिगत अपमान के रूप में इस्तेमाल किया गया है। यह ऑफेंसिव है।"
+                        };
+                    }
+                }
+                // 5. Saala / साला
+                else if (lower.includes('saala') || lower.includes('साला') || lower.includes('saale') || lower.includes('साले')) {
+                    const isFamily = lower.includes('behen') || lower.includes('बहन') || lower.includes('wife') || lower.includes('पत्नी') || lower.includes('bhai') || lower.includes('भाई') || lower.includes('doctor') || lower.includes('डॉक्टर') || lower.includes('family') || lower.includes('परिवार');
+                    if (isFamily) {
+                        detected = {
+                            text: text,
+                            verdict: "Normal",
+                            verdictTitle: "🛡️ NORMAL / SAFE",
+                            reason: "👨‍👩‍👦 'साला' पारिवारिक रिश्तेदार (Brother-in-law) के संदर्भ में प्रयुक्त हुआ — सुरक्षित।",
+                            threatScore: 0,
+                            keyword: "साला",
+                            semantics: "FAMILY KINSHIP",
+                            intent: "BENIGN FAMILY CONVERSATION",
+                            script: /[\u0900-\u097F]/.test(text) ? "DEVANAGARI SCRIPT" : "ROMANIZED HINGLISH",
+                            tokens: text.split(/\s+/).map(w => ({ t: w, safe: true })),
+                            speech: "पारिवारिक रिश्तेदार का संदर्भ सत्यापित हुआ। वाक्य सुरक्षित है।"
+                        };
+                    } else {
+                        detected = {
+                            text: text,
+                            verdict: "Offensive",
+                            verdictTitle: "⚠️ OFFENSIVE / SLANG",
+                            reason: "⚠️ 'साला' गाली के रूप में प्रयोग किया गया।",
+                            threatScore: 60,
+                            keyword: "साला",
+                            semantics: "INFORMAL ABUSIVE SLANG",
+                            intent: "DISMISSIVE HOSTILITY",
+                            script: /[\u0900-\u097F]/.test(text) ? "DEVANAGARI SCRIPT" : "ROMANIZED HINGLISH",
+                            tokens: text.split(/\s+/).map(w => ({ t: w, high: true })),
+                            speech: "चेतावनी। साला शब्द गाली के रूप में प्रयोग हुआ है। यह ऑफेंसिव है।"
+                        };
+                    }
+                }
+                // 6. Gadha / गधा
+                else if (lower.includes('gadha') || lower.includes('गधा') || lower.includes('gadhe') || lower.includes('गधे')) {
+                    const isAnimal = lower.includes('khet') || lower.includes('खेत') || lower.includes('bojh') || lower.includes('बोझ') || lower.includes('mehnati') || lower.includes('मेहनती') || lower.includes('janwar') || lower.includes('जानवर') || lower.includes('gaon') || lower.includes('गांव');
+                    if (isAnimal) {
+                        detected = {
+                            text: text,
+                            verdict: "Normal",
+                            verdictTitle: "🛡️ NORMAL / SAFE",
+                            reason: "🫏 'गधा' मेहनती जानवर के संदर्भ में पाया गया — सुरक्षित।",
+                            threatScore: 1,
+                            keyword: "गधा",
+                            semantics: "WORKING FARM ANIMAL",
+                            intent: "NATURAL DESCRIPTION",
+                            script: /[\u0900-\u097F]/.test(text) ? "DEVANAGARI SCRIPT" : "ROMANIZED HINGLISH",
+                            tokens: text.split(/\s+/).map(w => ({ t: w, safe: true })),
+                            speech: "मेहनती पशु का संदर्भ सत्यापित हुआ। गधा शब्द जानवर के लिए प्रयुक्त हुआ है। परिणाम सुरक्षित है।"
+                        };
+                    } else {
+                        detected = {
+                            text: text,
+                            verdict: "Offensive",
+                            verdictTitle: "⚠️ OFFENSIVE / INSULT",
+                            reason: "⚠️ 'गधा' बुद्धि पर कटाक्ष / अपमानजनक गाली के रूप में प्रयुक्त हुआ।",
+                            threatScore: 56,
+                            keyword: "गधा",
+                            semantics: "COGNITIVE INSULT / RIDICULE",
+                            intent: "VERBAL DEROGATION",
+                            script: /[\u0900-\u097F]/.test(text) ? "DEVANAGARI SCRIPT" : "ROMANIZED HINGLISH",
+                            tokens: text.split(/\s+/).map(w => ({ t: w, high: true })),
+                            speech: "सावधान! गधा शब्द किसी व्यक्ति की बुद्धि का अपमान करने के लिए प्रयुक्त हुआ है। यह ऑफेंसिव है।"
+                        };
+                    }
+                }
+                // 7. Ullu / उल्लू
+                else if (lower.includes('ullu') || lower.includes('उल्लू')) {
+                    const isBird = lower.includes('raat') || lower.includes('रात') || lower.includes('ped') || lower.includes('पेड़') || lower.includes('pakshi') || lower.includes('पक्षी') || lower.includes('jungle') || lower.includes('जंगल');
+                    if (isBird) {
+                        detected = {
+                            text: text,
+                            verdict: "Normal",
+                            verdictTitle: "🛡️ NORMAL / SAFE",
+                            reason: "🦉 'उल्लू' पक्षी / वन्यजीव के संदर्भ में पाया गया — सुरक्षित।",
+                            threatScore: 0,
+                            keyword: "उल्लू",
+                            semantics: "NOCTURNAL BIRD",
+                            intent: "AVIAN OBSERVATION",
+                            script: /[\u0900-\u097F]/.test(text) ? "DEVANAGARI SCRIPT" : "ROMANIZED HINGLISH",
+                            tokens: text.split(/\s+/).map(w => ({ t: w, safe: true })),
+                            speech: "पक्षी का संदर्भ सत्यापित हुआ। उल्लू शब्द रात के पक्षी के लिए प्रयुक्त हुआ है। परिणाम सुरक्षित।"
+                        };
+                    } else {
+                        detected = {
+                            text: text,
+                            verdict: "Offensive",
+                            verdictTitle: "⚠️ OFFENSIVE / SLANG",
+                            reason: "⚠️ 'उल्लू' मूर्ख / बेवकूफ बनाने के मुहावरे में प्रयुक्त हुआ।",
+                            threatScore: 42,
+                            keyword: "उल्लू",
+                            semantics: "COLLOQUIAL DECEPTIVE SLANG",
+                            intent: "CASUAL CONTEMPT",
+                            script: /[\u0900-\u097F]/.test(text) ? "DEVANAGARI SCRIPT" : "ROMANIZED HINGLISH",
+                            tokens: text.split(/\s+/).map(w => ({ t: w, high: true })),
+                            speech: "ध्यान दें। यहाँ उल्लू शब्द का प्रयोग मूर्ख बनाने के स्लैंग में हुआ है।"
+                        };
+                    }
+                }
+                // 8. Default Safe (Bilingual / Trilingual)
+                else {
+                    if (isEnglish) {
+                        detected = {
+                            text: text,
+                            verdict: "Normal",
+                            verdictTitle: "🛡️ NORMAL / SAFE",
+                            reason: "✨ No hate speech or offensive markers detected in English text — verified Safe & Normal.",
+                            threatScore: 1,
+                            keyword: "none",
+                            semantics: "ENGLISH CONVERSATIONAL",
+                            intent: "NEUTRAL / FRIENDLY",
+                            script: "STANDARD ENGLISH (LATIN)",
+                            tokens: text.split(/\s+/).map(w => ({ t: w, safe: true })),
+                            speech: "Analysis complete. No hate speech or toxicity detected in English input. Result is safe."
+                        };
+                    } else if (isTelugu) {
+                        detected = {
+                            text: text,
+                            verdict: "Normal",
+                            verdictTitle: "🛡️ NORMAL / SAFE",
+                            reason: "✨ వాక్యంలో ఎటువంటి ద్వేషపూరిత లేదా అభ్యంతరకర పదాలు లేవు — ధృవీకరించబడిన సురక్షితం.",
+                            threatScore: 1,
+                            keyword: "none",
+                            semantics: "TELUGU CONVERSATIONAL",
+                            intent: "NEUTRAL / FRIENDLY",
+                            script: lang === 'telugu' ? "TELUGU SCRIPT (తెలుగు లిపి)" : "ROMANIZED TELUGU (TENGLISH)",
+                            tokens: text.split(/\s+/).map(w => ({ t: w, safe: true })),
+                            speech: "విశ్లేషణ పూర్తయింది. తెలుగు వాక్యంలో ఎటువంటి ద్వేషపూరిత పదాలు లేవు. ఫలితం సురక్షితం."
+                        };
+                    } else {
+                        detected = {
+                            text: text,
+                            verdict: "Normal",
+                            verdictTitle: "🛡️ NORMAL / SAFE",
+                            reason: "✨ वाक्य में कोई नफरत या आपत्तिजनक शब्द नहीं पाया गया — सत्यापित सुरक्षित।",
+                            threatScore: 2,
+                            keyword: "none",
+                            semantics: "CONVERSATIONAL",
+                            intent: "NEUTRAL / FRIENDLY",
+                            script: /[\u0900-\u097F]/.test(text) ? "DEVANAGARI SCRIPT (HINDI)" : "ROMANIZED HINGLISH",
+                            tokens: text.split(/\s+/).map(w => ({ t: w, safe: true })),
+                            speech: "विश्लेषण पूर्ण हुआ। वाक्य में कोई नफरत या गाली नहीं पाई गई। यह सुरक्षित है।"
+                        };
+                    }
+                }
+            }
+
+            applyScenarioResult(detected);
+        }
+
+        // Terminal Log Appender
+        function logTerminal(msg) {
+            const term = document.getElementById('termLogs');
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0];
+            const line = document.createElement('div');
+            line.className = 'term-line';
+            line.innerHTML = `<span class="term-ts">[${timeStr}]</span> ${msg}`;
+            term.appendChild(line);
+            term.scrollTop = term.scrollHeight;
+        }
+
+        // Live Clock
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('liveClock').textContent = now.toLocaleTimeString() + ' IST';
+        }, 1000);
+
+        // =========================================================================
+        // 5. HUD MATRIX CONFIGURATOR & COLOR THEME CONTROLS
+        // =========================================================================
+        const colorThemes = [
+            { name: "NEON CYAN", hex: 0x00f0ff },
+            { name: "CYBERPUNK PINK", hex: 0xff0055 },
+            { name: "MATRIX GREEN", hex: 0x00ff66 },
+            { name: "SOLAR AMBER", hex: 0xfcee0a }
+        ];
+        let currentThemeIndex = 0;
+
+        function cycleHoloColor() {
+            currentThemeIndex = (currentThemeIndex + 1) % colorThemes.length;
+            const theme = colorThemes[currentThemeIndex];
+            updateHoloColorTheme(theme.hex);
+            logTerminal(`🎨 Hologram color theme switched to: ${theme.name}`);
+        }
+
+        function openMatrixModal() {
+            document.getElementById('matrixModal').classList.add('open');
+        }
+
+        function closeMatrixModal() {
+            document.getElementById('matrixModal').classList.remove('open');
+        }
+
+        function setMatrixTheme(hex) {
+            updateHoloColorTheme(hex);
+            logTerminal(`Hologram matrix theme updated.`);
+        }
+
+        function updateParticleSize(val) {
+            facePointMat.size = parseFloat(val);
+        }
+
+        function updateWireframeGlow(val) {
+            faceLineMat.opacity = parseFloat(val);
+        }
+
+        // Initial Load
+        window.addEventListener('DOMContentLoaded', () => {
+            setHoloMode('movie');
+            loadScenario(0);
+            setTimeout(() => {
+                triggerVoiceGreeting();
+            }, 800);
+        });
+    </script>
+
+    <!-- HUD MATRIX ENGINE SETTINGS MODAL -->
+    <div class="cyber-modal-overlay" id="matrixModal">
+        <div class="cyber-modal-card">
+            <div class="modal-header">
+                <div class="modal-title">//HUD_MATRIX_ENGINE_CONFIG</div>
+                <button class="modal-close-btn" onclick="closeMatrixModal()">[ESC / CLOSE]</button>
+            </div>
+
+            <div style="padding: 16px 20px;">
+                <div style="font-family:'Share Tech Mono', monospace; font-size:0.8rem; color:var(--neon-cyan); margin-bottom:10px;">
+                    //CYBER_HOLOGRAM_COLOR_THEME:
+                </div>
+                <div style="display:flex; gap:10px; margin-bottom:18px;">
+                    <button class="mode-chip" style="background:#00f0ff; color:#03060f; font-weight:bold;" onclick="setMatrixTheme(0x00f0ff)">CYAN</button>
+                    <button class="mode-chip" style="background:#ff0055; color:#fff; font-weight:bold;" onclick="setMatrixTheme(0xff0055)">PINK</button>
+                    <button class="mode-chip" style="background:#00ff66; color:#03060f; font-weight:bold;" onclick="setMatrixTheme(0x00ff66)">GREEN</button>
+                    <button class="mode-chip" style="background:#fcee0a; color:#03060f; font-weight:bold;" onclick="setMatrixTheme(0xfcee0a)">AMBER</button>
+                </div>
+
+                <div style="font-family:'Share Tech Mono', monospace; font-size:0.8rem; color:var(--neon-cyan); margin-bottom:6px;">
+                    //PARTICLE_SIZE:
+                </div>
+                <input type="range" min="0.03" max="0.09" step="0.005" value="0.052" style="width:100%; margin-bottom:16px; accent-color:var(--neon-cyan);" oninput="updateParticleSize(this.value)">
+
+                <div style="font-family:'Share Tech Mono', monospace; font-size:0.8rem; color:var(--neon-cyan); margin-bottom:6px;">
+                    //NEURAL_FILAMENT_OPACITY:
+                </div>
+                <input type="range" min="0.1" max="0.9" step="0.05" value="0.35" style="width:100%; margin-bottom:18px; accent-color:var(--neon-pink);" oninput="updateWireframeGlow(this.value)">
+
+                <div style="display:flex; justify-content:space-between; gap:10px;">
+                    <button class="action-btn" onclick="triggerVoiceGreeting(); closeMatrixModal();" style="width:100%; justify-content:center;">
+                        <span>🎙️ TEST HOLOGRAM VOICE TALK</span>
+                    </button>
+                    <button class="action-btn" onclick="closeMatrixModal()" style="border-color:var(--text-dim); color:var(--text-dim);">
+                        <span>CLOSE</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
