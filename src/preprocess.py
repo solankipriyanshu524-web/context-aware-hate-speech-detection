@@ -8,7 +8,14 @@ if '_sqlite3' not in sys.modules:
 
 import re
 import string
-from nltk.stem.porter import PorterStemmer
+try:
+    from nltk.stem.porter import PorterStemmer
+    stemmer = PorterStemmer()
+except Exception:
+    class DummyStemmer:
+        def stem(self, w): return w
+    stemmer = DummyStemmer()
+
 try:
     from nltk.corpus import stopwords
 except Exception:
@@ -34,7 +41,7 @@ FALLBACK_STOPWORDS = {
     'shouldn', "shouldn't", 'wasn', "wasn't", 'weren', "weren't", 'won', "won't", 'wouldn', "wouldn't"
 }
 
-stemmer = PorterStemmer()
+# stemmer is initialized above with safe fallback
 try:
     stopword_set = set(stopwords.words('english'))
 except Exception:

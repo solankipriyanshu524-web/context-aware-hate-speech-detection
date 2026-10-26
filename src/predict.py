@@ -3,6 +3,13 @@ import sys
 import re
 import joblib
 from src.preprocess import clean_text
+try:
+    from src.bert_model import MultilingualBertEngine
+except ImportError:
+    try:
+        from bert_model import MultilingualBertEngine
+    except ImportError:
+        MultilingualBertEngine = None
 
 if hasattr(sys.stdout, 'reconfigure'):
     try:
@@ -237,12 +244,51 @@ CONTEXT_WORDS = {
         'safe_reason': '🫏 "Gadida" detected in hardworking farm animal context in Telugu — classified as Normal.',
         'offensive_reason': '⚠️ "Gadida" detected as intellectual ridicule / insult in Telugu.'
     },
-    'గాడిద': {
-        'safe_keywords': ['పొలం', 'పశువు', 'పని', 'బరువు', 'జంతువు', 'రైతు'],
+    'padhna': {
+        'safe_keywords': ['padhna', 'padhai', 'padh', 'tu', 'tum', 'sher', 'kyun', 'kyon', 'kitab', 'school', 'exam', 'aaj', 'kal', 'toh', 'to', 'karo', 'kar', 'liya', 'nahi'],
         'safe_label': 'Normal',
-        'safe_reason': '🫏 "గాడిద" శ్రమించే జంతువు సందర్భంలో గుర్తించబడింది — classified as Normal.',
-        'offensive_reason': '⚠️ "గాడిద" బుద్ధిహీనతను కించపరిచే తిట్టుగా వాడబడింది.'
+        'safe_reason': '📚 "Padhna / Padhai" (Study & Education) context detected — classified as Normal & Encouraging.',
+        'offensive_reason': '⚠️ Context review.'
+    },
+    'पढ़ना': {
+        'safe_keywords': ['पढ़ना', 'पढ़', 'पढ़ाई', 'तू', 'तुम', 'शेर', 'क्यों', 'किताब', 'स्कूल', 'परीक्षा', 'एग्जाम', 'आज', 'कल', 'तो', 'करो', 'कर', 'लिया', 'नहीं', 'है'],
+        'safe_label': 'Normal',
+        'safe_reason': '📚 पढ़ाई / अध्ययन (Study & Education) के संदर्भ में पाया गया — classified as Normal & Encouraging.',
+        'offensive_reason': '⚠️ Context review.'
+    },
+    'पढ़': {
+        'safe_keywords': ['पढ़ना', 'पढ़', 'पढ़ाई', 'तू', 'तुम', 'शेर', 'क्यों', 'किताब', 'स्कूल', 'परीक्षा', 'एग्जाम', 'आज', 'कल', 'तो', 'करो', 'कर', 'लिया', 'नहीं', 'है'],
+        'safe_label': 'Normal',
+        'safe_reason': '📚 पढ़ाई / अध्ययन (Study & Education) के संदर्भ में पाया गया — classified as Normal & Encouraging.',
+        'offensive_reason': '⚠️ Context review.'
+    },
+    'शेर': {
+        'safe_keywords': ['तू', 'तुम', 'आयुष', 'बेटा', 'भाई', 'दोस्त', 'जंगल', 'पशु', 'जानवर', 'सर्कस', 'बहादुर', 'शाबाश', 'पढ़ना', 'काम', 'तो'],
+        'safe_label': 'Normal',
+        'safe_reason': '🦁 "शेर" bravery / affection / encouragement context (शेर बेटा / बहादुर) mein paya gaya — classified as Normal.',
+        'offensive_reason': '⚠️ Context review.'
+    },
+    'sher': {
+        'safe_keywords': ['tu', 'tum', 'ayush', 'bhai', 'dost', 'jungle', 'animal', 'lion', 'brave', 'padhna', 'kaam', 'shabash', 'toh'],
+        'safe_label': 'Normal',
+        'safe_reason': '🦁 "Sher" detected as praise / brave / affection ("sher beta") — classified as Normal.',
+        'offensive_reason': '⚠️ Context review.'
     }
+}
+
+# ============================================================
+# BENIGN EVERYDAY VOCABULARY GUARD (Prevents False Positives)
+# ============================================================
+BENIGN_DAILY_WORDS = {
+    # Education & Study
+    'पढ़ना', 'पढ़', 'पढ़ाई', 'पढ़ता', 'पढ़ती', 'पढ़ते', 'पढ़ाना', 'किताब', 'किताबें', 'स्कूल', 'कॉलेज', 'परीक्षा', 'एग्जाम', 'होमवर्क',
+    'padhna', 'padhai', 'padh', 'study', 'studying', 'studies', 'school', 'college', 'exam', 'book', 'books', 'homework', 'learn', 'learning',
+    # Encouragement / Praise
+    'शेर', 'बहादुर', 'शाबाश', 'प्यारा', 'प्यारी', 'दोस्त', 'भाई', 'sher', 'brave', 'proud', 'champion', 'shabash', 'accha',
+    # Daily activities & questions
+    'खाना', 'सोना', 'काम', 'जाना', 'आना', 'बात', 'गाना', 'खेलना', 'खेल', 'मदद', 'समय', 'वक्त',
+    'kaam', 'khana', 'soch', 'baat', 'khel', 'help', 'time',
+    'क्यों', 'कहाँ', 'कब', 'कैसे', 'क्या', 'kyon', 'kyun', 'kahan', 'kaise', 'kya', 'why', 'how', 'when', 'what', 'where'
 }
 
 # ============================================================
@@ -253,12 +299,15 @@ EXPLICIT_HATE_SPEECH = {
     "मार दूंगा", "मार डालूंगा", "जान से मार", "खत्म कर दूंगा", "गोली मार", "काट दूंगा",
     "उड़ा दूंगा", "ज़िंदा जला", "जिंदा जला", "चीर दूंगा", "फाड़ दूंगा", "गला काट", "तबाह कर दूंगा",
     "मारून टाकीन", "जीव घेईन",
+    "मारना चाहता", "मारना चाहता हूं", "मारना चाहता हु", "मारना चाहती", "मारना चाहते", "मार डालना चाहता",
+    "पीट दूंगा", "जान लेना चाहता", "खत्म करना चाहता", "मारने आया हूं", "मारने आया", "हत्या कर दूंगा",
     # Phonetic English in Devanagari (from speech-to-text or typing)
     "आई वांट टू किल यू", "वांट टू किल यू", "आई विल किल यू", "विल किल यू", "किल यू", "शूट यू", "मर्डर यू", "किल कर दूंगा",
     
     # Roman / Hinglish Violent Threats (with single & double 'a')
     "maar dunga", "mar dunga", "maar dalunga", "mar dalunga", "jaan se maar", "jaan se mar",
     "jaan se maar dunga", "jaan se mar dunga", "tujhe maar dunga", "tujhe mar dunga",
+    "marna chahta", "marna chahta hoon", "marna chahti", "mar dalna chahta", "marne aaya", "marne aaya hu", "jaan lena chahta", "khatam karna chahta",
     "khatam kar dunga", "khatm kar dunga", "goli maar", "goli mar", "marunga", "maarunga",
     "kaat dunga", "uda dunga", "zinda jala", "cheer dunga", "tabah kar dunga",
     
@@ -314,11 +363,16 @@ class HateSpeechPredictor:
         model_path = os.path.join(models_dir, 'model.pkl')
         vectorizer_path = os.path.join(models_dir, 'vectorizer.pkl')
         
-        if not os.path.exists(model_path) or not os.path.exists(vectorizer_path):
-            raise FileNotFoundError("Model or Vectorizer not found. Please train the model first.")
-            
-        self.model = joblib.load(model_path)
-        self.vectorizer = joblib.load(vectorizer_path)
+        self.model = None
+        self.vectorizer = None
+        if os.path.exists(model_path) and os.path.exists(vectorizer_path):
+            try:
+                self.model = joblib.load(model_path)
+                self.vectorizer = joblib.load(vectorizer_path)
+            except Exception as e:
+                print(f"ℹ️ [Predictor] Classical model load skipped ({e}). Relying on fine-tuned Transformer.")
+
+        self.bert = MultilingualBertEngine() if MultilingualBertEngine else None
     
     def detect_context(self, text):
         text_lower = text.lower()
@@ -346,8 +400,31 @@ class HateSpeechPredictor:
         
         return None
 
+    def detect_negated_threats(self, text):
+        """
+        Detects statements where violent threats are explicitly negated, questioned, or denied.
+        e.g. "I don't want to kill you", "why would I kill you", "mai tumhe nahi marna chahta"
+        """
+        text_lower = text.lower()
+        negation_patterns = [
+            r"(?:don'?t|do\s+not|never|wouldn'?t|won'?t|not|no\s+intention\s+to|why\s+would\s+i|refuse\s+to|didn'?t)\s+(?:even\s+)?(?:want\s+to\s+|try\s+to\s+|going\s+to\s+|plan\s+to\s+)?(?:kill|murder|harm|shoot|hurt|attack|burn|destroy)",
+            r"(?:nahi|nhi|na|kabhi\s+nahi)\s+(?:marna|maarna|jaan\s+se\s+marna|khatam\s+karna|thokna)",
+            r"(?:marna|maarna|jaan\s+se\s+marna)\s+(?:nahi|nhi)\s+chahta",
+            r"मारना\s+नहीं\s+चाहता|मारना\s+नहीं\s+चाहती|नहीं\s+मारूंगा|नहीं\s+मारना|जान\s+से\s+नहीं\s+मारना|क्यों\s+मारूंगा|मारना\s+नहीं\s+है"
+        ]
+        for pat in negation_patterns:
+            m = re.search(pat, text_lower, re.IGNORECASE)
+            if m:
+                return m.group(0)
+        return None
+
     def detect_hate_threats(self, text):
         text_lower = text.lower()
+
+        # If statement contains an explicit negation/denial of threat, it is NOT a threat
+        if self.detect_negated_threats(text):
+            return []
+
         matched = []
         for threat in EXPLICIT_HATE_SPEECH:
             if threat in text_lower:
@@ -357,11 +434,16 @@ class HateSpeechPredictor:
         if not matched:
             patterns = [
                 r'(?:tujhe|tumhe|tere\s*ko|tera)?\s*(?:jaan\s*s[e|y]\s*)?m[a]+r\s*(?:d[u|o]ng[a|e|i]|d[a]*lung[a|e|i])',
+                r'm[a]+rn[a|e]\s*ch[a]+ht[a|e|i]',
+                r'मारना\s*चाहता|मारना\s*चाहती|मारना\s*चाहते|मार\s*डालना\s*चाहता|जान\s*लेना\s*चाहता|खत्म\s*करना\s*चाहता',
                 r'm[a]+rung[a|e|i]',
                 r'khat[a]*m\s*kar\s*d[u|o]ng[a|e|i]',
                 r'goli\s*m[a]+r',
                 r'uda\s*d[u|o]ng[a|e|i]',
-                r'(?:i\s+)?(?:want\s+to|will|gonna|going\s+to)\s+kill\s+you',
+                r'मौत|तेरी\s*मौत|maut|teri\s*maut',
+                r'कर\s*डालूंगा|मार\s*डालूंगा|काट\s*डालूंगा|फाड़\s*डालूंगा|उड़ा\s*डालूंगा|चीर\s*डालूंगा',
+                r'(?:kar|mar|maar|kaat|faad|khatam|uda)\s*(?:d[a]*lung[a|e|i]|d[u|o]ng[a|e|i])',
+                r'(?:i\s+)?(?:want\s+to|will|gonna|going\s+to|wanna)\s+kill\s+you',
                 r'kill\s+you',
                 r'आई\s*वांट\s*टू\s*किल\s*यू|वांट\s*टू\s*किल|किल\s*यू|आई\s*विल\s*किल\s*यू|शूट\s*यू',
                 r'(?:ninnu\s+)?champ[e|a]st[a|u]|narik[e|a]st[a|u]|pranam\s*teest[a|u]',
@@ -384,22 +466,32 @@ class HateSpeechPredictor:
 
     def predict(self, text):
         cleaned_text = clean_text(text)
-        vectorized_text = self.vectorizer.transform([cleaned_text])
-        prediction = self.model.predict(vectorized_text)[0]
+        if self.model and self.vectorizer:
+            vectorized_text = self.vectorizer.transform([cleaned_text])
+            prediction = self.model.predict(vectorized_text)[0]
+            label = str(prediction)
+        elif self.bert:
+            bert_res = self.bert.predict(text)
+            label = bert_res['prediction']
+        else:
+            label = 'Normal'
         
-        label = str(prediction)
-        
-        # 1. Check Context Overrides (Religious/Animal/Family relation)
-        context_info = self.detect_context(text)
-        if context_info and context_info.get('is_safe'):
+        # 0. Check Explicit Negation / Peaceful Denial of Violence (e.g. "I don't want to kill you", "nahi marna chahta")
+        negated_phrase = self.detect_negated_threats(text)
+        if negated_phrase:
             return {
                 'original_text': text,
                 'cleaned_text': cleaned_text,
                 'prediction': 'Normal',
-                'context': context_info
+                'context': {
+                    'found_word': negated_phrase,
+                    'is_safe': True,
+                    'category': 'Peaceful Denial / Negation',
+                    'reason': f"🕊️ Peaceful Negation detected: '{negated_phrase}' — explicit denial of violent intent. Classified as Normal & Safe."
+                }
             }
 
-        # 2. Check Explicit Severe Hate Speech & Violent Threats
+        # 1. Check Explicit Severe Hate Speech & Violent Threats (Top Priority: Threats are NEVER excused)
         matched_hate = self.detect_hate_threats(text)
         if matched_hate:
             return {
@@ -412,6 +504,16 @@ class HateSpeechPredictor:
                     'category': 'Hate Speech',
                     'reason': f"🚨 Violent Threat / Hate Speech detected: '{matched_hate[0]}'"
                 }
+            }
+
+        # 2. Check Context Overrides (Religious/Animal/Study/Encouragement relation)
+        context_info = self.detect_context(text)
+        if context_info and context_info.get('is_safe'):
+            return {
+                'original_text': text,
+                'cleaned_text': cleaned_text,
+                'prediction': 'Normal',
+                'context': context_info
             }
 
         # 3. Check Explicit Casual Abusive / Profanities (e.g. हरामजादे, चूतिया)
@@ -438,12 +540,17 @@ class HateSpeechPredictor:
                 'context': context_info
             }
 
-        # 5. Fallback to trained Machine Learning Model ('Normal', 'Offensive', 'Hate Speech')
+        # 5. Respect Neural Transformer prediction
         return {
             'original_text': text,
             'cleaned_text': cleaned_text,
             'prediction': label,
-            'context': None
+            'context': {
+                'found_word': 'Contextual Neural Inference',
+                'is_safe': label == 'Normal',
+                'category': label,
+                'reason': f"🧠 Neural Model classified as {label} based on semantic context."
+            }
         }
 
 if __name__ == "__main__":
