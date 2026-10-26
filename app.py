@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import os
 import time
 import re
@@ -598,11 +599,26 @@ if predictor:
     st.sidebar.markdown("<p style='font-family: Share Tech Mono; font-size: 0.8rem; color: #64748b;'>ARASAKA FIREWALL: <strong>BYPASSED</strong><br/>NET ACCESS: <strong>ENCRYPTED</strong><br/>CREATOR: <strong>PRIYANSHU</strong></p>", unsafe_allow_html=True)
     
     # ------------------ MAIN HUD TABS ------------------
-    tab1, tab2, tab3 = st.tabs([
-        "⚡ JUDGMENT PROTOCOL (LIVE)",
+    tab_hud, tab1, tab2, tab3 = st.tabs([
+        "🕹️ CYBERPUNK HUD (LIVE DECK)",
+        "⚡ STREAMLIT CONTROLS",
         "📥 BATCH PURIFICATION DECK",
         "📊 NEURAL INSIGHTS & METRICS"
     ])
+    
+    # ==========================================================================
+    # TAB 0: FULL CYBERPUNK HUD (LIVE THREE.JS / AUDIO DECK)
+    # ==========================================================================
+    with tab_hud:
+        hud_path = os.path.join(os.path.dirname(__file__), "cyberpunk_hud.html")
+        if os.path.exists(hud_path):
+            with open(hud_path, "r", encoding="utf-8") as f:
+                hud_html = f.read()
+            b64_vagabond = get_image_base64()
+            hud_html = hud_html.replace('src="./vagabond.jpg"', f'src="{b64_vagabond}"')
+            components.html(hud_html, height=1200, scrolling=True)
+        else:
+            st.error("⚠️ cyberpunk_hud.html file not found in repository.")
     
     # ==========================================================================
     # TAB 1: JUDGMENT PROTOCOL (LIVE MULTI-MODAL ANALYZER)
