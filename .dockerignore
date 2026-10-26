@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv_runtime/
+.git/
+.gitignore
+.vscode/
+.idea/
+*.log
+.env
+presentation_demo.csv
+test_gpu_audio.wav
+user_face_*.png
+my_face.jpg
+vagabond.jpg
