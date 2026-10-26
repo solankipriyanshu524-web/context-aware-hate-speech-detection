@@ -7,3 +7,6 @@ streamlit
 matplotlib
 seaborn
 SpeechRecognition
+fastapi
+uvicorn
+python-multipart
