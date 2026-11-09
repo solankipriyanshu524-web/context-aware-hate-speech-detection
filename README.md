@@ -1,25 +1,19 @@
 # 🛡️ Multimodal Context-Aware Hate Speech Detection System
-### 🔮 Phase 2: 3D Holographic Cyber Cortex & Multilingual BERT Reasoning (Live)
+### 🔮 Multilingual BERT Reasoning Engine & Cyberpunk Neural HUD (Live)
 
-[![Phase 2](https://img.shields.io/badge/Phase%202-3D%20Hologram%20Live-brightgreen.svg)](#-phase-2-3d-holographic-cyber-cortex--multilingual-bert-hud)
-[![3D Engine](https://img.shields.io/badge/3D%20Engine-Three.js%20WebGL-cyan.svg)](https://threejs.org/)
-[![Languages](https://img.shields.io/badge/Languages-English%20%7C%20Hindi%20%7C%20Hinglish%20%7C%20Telugu-blue.svg)](#-how-the-system-understands-context)
-[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
-[![ASR](https://img.shields.io/badge/ASR-Faster--Whisper%20%2B%20WebSpeech-purple.svg)](https://github.com/SYSTRAN/faster-whisper)
+[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Live%20Demo-blue?style=for-the-badge&logo=huggingface)](https://huggingface.co/spaces/kaliputra1/deviputra-hate-speech-detector)
+[![GitHub License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Model](https://img.shields.io/badge/Transformer-HingBERT%20%7C%20PyTorch-orange.svg)](https://huggingface.co/l3cube-pune/hing-bert)
+[![ASR](https://img.shields.io/badge/ASR-Faster--Whisper-purple.svg)](https://github.com/SYSTRAN/faster-whisper)
 
-> 🌌 **Phase 2 Upgrade:** Next-generation **3D Procedural Holographic Avatar (Three.js)** with real-time audio lip-sync, dynamic color-shifting (Safe Cyan / Slur Amber / Threat Red Alert), and deep contextual disambiguation across **English, Hindi, Hinglish, and Telugu**.
+> 🌐 **Try it Live on Hugging Face Spaces:** [https://huggingface.co/spaces/kaliputra1/deviputra-hate-speech-detector](https://huggingface.co/spaces/kaliputra1/deviputra-hate-speech-detector)
 
 ---
 
-## ⚡ Quick Launch (Phase 2 3D Hologram HUD)
-
-```bash
-# 1. Start server from project directory
-python -m http.server 8080
-
-# 2. Open 3D Hologram HUD in your browser
-http://localhost:8080/hologram_face_hud.html
-```
+## ⚡ Quick Links & Live Demos
+- 🚀 **Live Cloud Demo (Hugging Face):** [DEVIPUTRA AI on Hugging Face Spaces](https://huggingface.co/spaces/kaliputra1/deviputra-hate-speech-detector)
+- 🎮 **Direct Fullscreen Interface:** [Interactive Cyberpunk HUD](https://kaliputra1-deviputra-hate-speech-detector.hf.space)
 
 ---
 

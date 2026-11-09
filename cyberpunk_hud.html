@@ -1680,17 +1680,39 @@
             const startTime = performance.now();
 
             try {
-                // Call local FastAPI endpoint (port 8000)
-                const response = await fetch('http://localhost:8000/predict', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json; charset=utf-8' },
-                    body: JSON.stringify({ text: textInput })
-                });
+                // Determine origin safely even inside iframe
+                let apiBase = window.location.origin;
+                if (!apiBase || apiBase === 'null' || apiBase.startsWith('about:')) {
+                    try {
+                        if (window.parent && window.parent.location && window.parent.location.origin) {
+                            apiBase = window.parent.location.origin;
+                        }
+                    } catch(e) {
+                        apiBase = '';
+                    }
+                }
+                const targetUrl = (apiBase && !apiBase.startsWith('about:') && apiBase !== 'null') ? `${apiBase}/predict` : '/predict';
 
-                if (response.ok) {
+                let response = null;
+                try {
+                    response = await fetch(targetUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+                        body: JSON.stringify({ text: textInput })
+                    });
+                } catch (e) {
+                    // Fallback to local port 8000
+                    response = await fetch('http://localhost:8000/predict', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+                        body: JSON.stringify({ text: textInput })
+                    });
+                }
+
+                if (response && response.ok) {
                     const data = await response.json();
                     applyInferenceResults(data, startTime);
-                    recStatus.textContent = 'ANALYSIS COMPLETE // SERVER INFERENCE';
+                    recStatus.textContent = `ANALYSIS COMPLETE // ${data.model_used || 'BERT NEURAL ENGINE'}`;
                     recStatus.style.color = '#00ff66';
                     return;
                 }
