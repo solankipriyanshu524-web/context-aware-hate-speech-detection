@@ -29,7 +29,7 @@ class MultilingualBertEngine:
             self.model_name = model_name
             self.is_custom_finetuned = os.path.isdir(model_name)
 
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cpu")
         self.tokenizer = None
         self.model = None
         self._is_ready = False
@@ -41,6 +41,11 @@ class MultilingualBertEngine:
                 from transformers import AutoTokenizer, AutoModelForSequenceClassification
                 self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
                 self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name)
+                try:
+                    if torch.cuda.is_available():
+                        self.device = torch.device("cuda:0")
+                except Exception:
+                    self.device = torch.device("cpu")
                 self.model.to(self.device)
                 self.model.eval()
                 self._is_ready = True

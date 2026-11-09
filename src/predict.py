@@ -466,7 +466,13 @@ class HateSpeechPredictor:
 
     def predict(self, text):
         cleaned_text = clean_text(text)
-        if self.model and self.vectorizer:
+        if self.bert and (self.bert.is_custom_finetuned or self.bert._is_ready):
+            try:
+                bert_res = self.bert.predict(text)
+                label = bert_res['prediction']
+            except Exception:
+                label = 'Normal'
+        elif self.model and self.vectorizer:
             vectorized_text = self.vectorizer.transform([cleaned_text])
             prediction = self.model.predict(vectorized_text)[0]
             label = str(prediction)
